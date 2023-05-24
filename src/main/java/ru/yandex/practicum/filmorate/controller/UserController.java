@@ -22,6 +22,7 @@ public class UserController {
     public User create(@RequestBody User user) {
         runAllChecks(user);
         if (users.containsKey(user.getId())) {
+            log.debug("Пользователь с ID {} уже зарегистрирован.", user.getId());
             throw new ValidationException("Пользователь с ID " + user.getId() + " уже зарегистрирован.");
         }
         checkName(user);
@@ -34,6 +35,7 @@ public class UserController {
     public User update(@RequestBody User user) {
         runAllChecks(user);
         if (!users.containsKey(user.getId())) {
+            log.debug("Пользователь с ID {} не зарегистрирован.", user.getId());
             throw new ValidationException("Пользователь с ID " + user.getId() + " не зарегистрирован.");
         }
         checkName(user);
@@ -56,6 +58,7 @@ public class UserController {
     private void isEmailEmpty(User user) {
         String currentEmail = user.getEmail();
         if (currentEmail == null || currentEmail.isBlank() || !currentEmail.contains("@")) {
+            log.debug("Адрес электронной почты не корректный - {}", user.getEmail());
             throw new ValidationException("Адрес электронной почты не может быть пустой и должен содержать символ @");
         }
     }
@@ -63,12 +66,14 @@ public class UserController {
     private void isLoginValid(User user) {
         String currentLogin = user.getLogin();
         if (currentLogin == null || currentLogin.isBlank() || currentLogin.contains(" ")) {
+            log.debug("Не корректный логин - {}", user.getLogin());
             throw new ValidationException("Логин не может быть пустым и содержать пробелы");
         }
     }
 
     private void isBdValid(User user) {
         if (user.getBirthday().isAfter(LocalDate.now())) {
+            log.debug("Дата рождения не может быть в будущем - {}", user.getBirthday());
             throw new ValidationException("Дата рождения не может быть в будущем.");
         }
     }

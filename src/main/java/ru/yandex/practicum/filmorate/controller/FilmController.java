@@ -48,23 +48,28 @@ public class FilmController {
 
     private void checkName(Film film) {
         if (film.getName().isBlank() || film.getName() == null) {
+            log.debug("Получено пустое название фильма - {}.", film.getName());
             throw new ValidationException("Название не может быть пустым.");
         }
     }
 
     private void checkDescription(Film film) {
         if (200 < film.getDescription().length()) {
+            log.debug("Длинна фильма превышает 200 символов - {}.", film.getDescription().length());
             throw new ValidationException("Максимальная длина описания — 200 символов.");
         }
     }
 
     private void checkDate(Film film) {
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28)))
+        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
+            log.debug("Дата релиза фильма до 28-12-1985 - {}.", film.getReleaseDate());
             throw new ValidationException("Дата релиза должна быть не раньше 28 декабря 1895 года.");
+        }
     }
 
     private void checkDuration(Film film) {
         if (film.getDuration() < 0) {
+            log.debug("Продолжительность фильма - отрицательное число - {}.", film.getDuration());
             throw new ValidationException("Продолжительность фильма должна быть положительной.");
         }
     }
