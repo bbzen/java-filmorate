@@ -23,7 +23,7 @@ public class UserController {
             throw new ValidationException("Пользователь с ID " + user.getId() + " уже зарегистрирован.");
         }
         checkName(user);
-        setId(user);
+        user.setId(++Id);
         users.put(user.getId(), user);
         return user;
     }
@@ -44,10 +44,6 @@ public class UserController {
         return new ArrayList<>(users.values());
     }
 
-    private void setId(User user) {
-        user.setId(++Id);
-    }
-
     private void checkName(User user) {
         String currentName = user.getName();
         if (currentName == null || currentName.isBlank()) {
@@ -55,29 +51,29 @@ public class UserController {
         }
     }
 
-    private boolean isEmailNotEmpty(User user) {
+    private void isEmailEmpty(User user) {
         String currentEmail = user.getEmail();
-        return currentEmail != null && !currentEmail.isBlank() && currentEmail.contains("@");
+        if (currentEmail == null || currentEmail.isBlank() || !currentEmail.contains("@")) {
+            throw new ValidationException("Адрес электронной почты не может быть пустой и должен содержать символ @");
+        }
     }
 
-    private boolean isLoginInvalid(User user) {
+    private void isLoginValid(User user) {
         String currentLogin = user.getLogin();
-        return currentLogin == null || currentLogin.isBlank() || currentLogin.contains(" ");
+        if (currentLogin == null || currentLogin.isBlank() || currentLogin.contains(" ")) {
+            throw new ValidationException("Логин не может быть пустым и содержать пробелы");
+        }
     }
 
-    private boolean isBdInFuture(User user) {
-        return user.getBirthday().isAfter(LocalDate.now());
+    private void isBdValid(User user) {
+        if (user.getBirthday().isAfter(LocalDate.now())) {
+            throw new ValidationException("Дата рождения не может быть в будущем.");
+        }
     }
 
     private void runAllChecks(User user) {
-        if (!isEmailNotEmpty(user)) {
-            throw new ValidationException("Адрес электронной почты не может быть пустой и должен содержать символ @");
-        }
-        if (isLoginInvalid(user)) {
-            throw new ValidationException("Логин не может быть пустым и содержать пробелы");
-        }
-        if (isBdInFuture(user)) {
-            throw new ValidationException("Дата рождения не может быть в будущем.");
-        }
+        isEmailEmpty(user);
+        isLoginValid(user);
+        isBdValid(user);
     }
 }

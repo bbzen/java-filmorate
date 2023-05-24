@@ -13,34 +13,28 @@ import java.util.Map;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
+    private int Id = 0;
     private final Map<Integer, Film> films = new HashMap<>();
 
     @PostMapping
     public Film create(@RequestBody Film film) {
-        try {
-            if (isAllChecksDone(film) && !films.containsKey(film.getId())) {
-                checkDescription(film);
-                films.put(film.getId(), film);
-            }
-            return film;
-        } catch (Exception e) {
-            String message = "Ошибка валидации при добавлении фильма.";
-            throw new ValidationException(message);
+        doAllChecks(film);
+        if (films.containsKey(film.getId())) {
+            throw new ValidationException("Фильм с ID " + film.getId() + " уже зарегистрирован.");
         }
+        film.setId(++Id);
+        films.put(film.getId(), film);
+        return film;
     }
 
     @PutMapping
     public Film update(@RequestBody Film film) {
-        try {
-            if (isAllChecksDone(film) && films.containsKey(film.getId())) {
-                checkDescription(film);
-                films.put(film.getId(), film);
-            }
-            return film;
-        } catch (Exception e) {
-            String message = "Ошибка валидации при обновлении фильма.";
-            throw new ValidationException(message);
+        doAllChecks(film);
+        if (!films.containsKey(film.getId())) {
+            throw new ValidationException("Данный фильм отсутствует в базе данных.");
         }
+        films.put(film.getId(), film);
+        return film;
     }
 
     @GetMapping
@@ -48,27 +42,33 @@ public class FilmController {
         return new ArrayList<>(films.values());
     }
 
-    private boolean isNameEmpty(Film film) {
-        return film.getName().isBlank() || film.getName() == null;
-    }
-
-    private void checkDescription(Film film) {
-        String currentDescription = film.getDescription();
-        if (200 < currentDescription.length()) {
-            film.setDescription(currentDescription.substring(0, 200));
+    private void checkName(Film film) {
+        if (film.getName().isBlank() || film.getName() == null) {
+            throw new ValidationException("Название не может быть пустым.");
         }
     }
 
-    private boolean isDateValid(Film film) {
-        LocalDate anchorDate = LocalDate.of(1895, 12, 28);
-        return film.getReleaseDate().isAfter(anchorDate);
+    private void checkDescription(Film film) {
+        if (200 < film.getDescription().length()) {
+            throw new ValidationException("Максимальная длина описания — 200 символов.");
+        }
     }
 
-    private boolean isDurationPositive(Film film) {
-        return !film.getDuration().isNegative();
+    private void checkDate(Film film) {
+        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28)))
+            throw new ValidationException("Дата релиза должна быть не раньше 28 декабря 1895 года.");
     }
 
-    private boolean isAllChecksDone(Film film) {
-        return !isNameEmpty(film) && isDateValid(film) && isDurationPositive(film);
+    private void checkDuration(Film film) {
+        if (film.getDuration() < 0) {
+            throw new ValidationException("Продолжительность фильма должна быть положительной.");
+        }
+    }
+
+    private void doAllChecks(Film film) {
+        checkName(film);
+        checkDescription(film);
+        checkDate(film);
+        checkDuration(film);
     }
 }
