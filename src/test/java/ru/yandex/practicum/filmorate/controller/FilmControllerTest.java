@@ -25,6 +25,12 @@ class FilmControllerTest {
     }
 
     @Test
+    void shouldIgnoreVoidRequest() {
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> filmController.create(null));
+        assertEquals(null, exception.getMessage());
+    }
+
+    @Test
     void shouldNotCreateIfNameIsEmpty() {
         try {
             filmController.create(new Film(0, "", "Movie description", LocalDate.of(2000, 5, 24), 120));
