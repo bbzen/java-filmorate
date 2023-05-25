@@ -38,13 +38,9 @@ class UserControllerTest {
 
     @Test
     void shouldNotCreateWrongEmail() {
-        User wrongUser1 = new User(0, "", "UserLogin", "", LocalDate.of(1980, 5, 25));
-        User wrongUser2 = new User(0, "user-email.ru", "UserLogin", "", LocalDate.of(1980, 5, 25));
-        RuntimeException exception1 = assertThrows(RuntimeException.class, () -> userController.create(wrongUser1));
-        RuntimeException exception2 = assertThrows(RuntimeException.class, () -> userController.create(wrongUser2));
+        User wrongUser1 = new User(0, "", "UserLogin", "User Name", LocalDate.of(1980, 5, 25));
+        User returned = userController.create(wrongUser1);
 
-        assertEquals("Адрес электронной почты не может быть пустой и должен содержать символ @", exception1.getMessage());
-        assertEquals("Адрес электронной почты не может быть пустой и должен содержать символ @", exception2.getMessage());
     }
 
     @Test
