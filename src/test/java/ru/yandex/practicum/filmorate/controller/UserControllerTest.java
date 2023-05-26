@@ -40,6 +40,7 @@ class UserControllerTest {
     void shouldNotCreateWrongEmail() {
         User wrongUser1 = new User(0, "", "UserLogin", "User Name", LocalDate.of(1980, 5, 25));
         User returned = userController.create(wrongUser1);
+        //todo get done this test too
 
     }
 
