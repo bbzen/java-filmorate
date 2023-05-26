@@ -64,4 +64,21 @@ class UserControllerTest {
         RuntimeException exception = assertThrows(RuntimeException.class, () -> userController.create(new User(0, "user@email.ru", "UserLogin", "", LocalDate.of(3000, 5, 25))));
         assertEquals("Дата рождения не может быть в будущем.", exception.getMessage());
     }
+
+    @Test
+    void shouldUpdateNormalUser() {
+        userController.create(new User(0, "user@email.ru", "UserLogin", "User Name", LocalDate.of(1980, 5, 25)));
+        User expectedUser = new User(1, "newUserEmail@email.ru", "newUserLogin", "NewUser Name", LocalDate.of(1980, 5, 25));
+        User updatedUser = userController.update(expectedUser);
+        assertEquals(expectedUser, updatedUser);
+    }
+
+    @Test
+    void shouldNotUpdateIfIdIsWrong() {
+        userController.create(new User(0, "user@email.ru", "UserLogin", "User Name", LocalDate.of(1980, 5, 25)));
+        User expectedUser = new User(2, "UpdatedUserEmail@email.ru", "UpdatedUserLogin", "UpdatedUser Name", LocalDate.of(1980, 5, 25));
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> userController.update(expectedUser));
+        assertEquals("Пользователь с ID 2 не зарегистрирован.", exception.getMessage());
+    }
 }
+
