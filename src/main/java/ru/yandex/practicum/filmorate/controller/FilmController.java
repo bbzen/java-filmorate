@@ -21,10 +21,6 @@ public class FilmController {
     @PostMapping
     public Film create(@RequestBody Film film) {
         doAllChecks(film);
-        if (films.containsKey(film.getId())) {
-            log.debug("Фильм с ID {} уже зарегистрирован.", film.getId());
-            throw new ValidationException("Фильм с ID " + film.getId() + " уже зарегистрирован.");
-        }
         film.setId(++id);
         films.put(film.getId(), film);
         return film;

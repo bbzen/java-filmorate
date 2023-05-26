@@ -21,10 +21,6 @@ public class UserController {
     @PostMapping
     public User create(@RequestBody User user) {
         runAllChecks(user);
-        if (users.containsKey(user.getId())) {
-            log.debug("Пользователь с ID {} уже зарегистрирован.", user.getId());
-            throw new ValidationException("Пользователь с ID " + user.getId() + " уже зарегистрирован.");
-        }
         checkName(user);
         user.setId(++id);
         users.put(user.getId(), user);
