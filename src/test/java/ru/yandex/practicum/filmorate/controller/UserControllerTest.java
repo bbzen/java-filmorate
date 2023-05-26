@@ -34,7 +34,7 @@ class UserControllerTest {
     @Test
     void shouldIgnoreVoidRequest() {
         RuntimeException exception = assertThrows(RuntimeException.class, () -> userController.create(null));
-        assertEquals(null, exception.getMessage());
+        assertNull(exception.getMessage());
     }
 
     @Test
