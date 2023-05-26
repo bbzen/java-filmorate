@@ -14,7 +14,7 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class User {
     private int id;
-    @Email(message = "электронная почта не может быть пустой и должна содержать символ @")
+    @Email(message = "Электронная почта не может быть пустой и должна содержать символ @")
     @NotBlank
     private final String email;
     @UserLoginValid

@@ -12,7 +12,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Constraint(validatedBy = { DateFutureValidator.class })
 public @interface DateFuture {
-    String message() default "Дата рождения не может быть в будущем.";
+    String message() default "Дата рождения не может быть в будущем";
 
     Class<?>[] groups() default { };
 
