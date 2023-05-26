@@ -27,7 +27,7 @@ class FilmControllerTest {
     @Test
     void shouldIgnoreVoidRequest() {
         RuntimeException exception = assertThrows(RuntimeException.class, () -> filmController.create(null));
-        assertEquals(null, exception.getMessage());
+        assertNull(exception.getMessage());
     }
 
     @Test
