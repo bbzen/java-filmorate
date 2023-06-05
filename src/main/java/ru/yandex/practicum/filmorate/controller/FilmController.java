@@ -17,7 +17,6 @@ public class FilmController {
         this.inMemoryFilmStorage = inMemoryFilmStorage;
     }
 
-
     @PostMapping
     public Film create(@RequestBody Film film) {
         inMemoryFilmStorage.createFilm(film);
