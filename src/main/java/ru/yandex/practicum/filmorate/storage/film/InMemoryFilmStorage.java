@@ -16,7 +16,11 @@ import java.util.Map;
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
     private int id = 0;
-    private final Map<Integer, Film> films = new HashMap<>();
+    private final Map<Integer, Film> films;
+
+    public InMemoryFilmStorage() {
+        this.films = new HashMap<>();
+    }
 
     public List<Film> findAll() {
         return new ArrayList<>(films.values());
@@ -24,53 +28,26 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public void createFilm(Film film) {
-        doAllChecks(film);
         film.setId(++id);
         films.put(film.getId(), film);
     }
 
     @Override
     public void updateFilm(Film film) {
-        doAllChecks(film);
-        if (!films.containsKey(film.getId())) {
-            log.debug("Данный фильм отсутствует в базе данных.");
-            throw new FilmNotFoundException("Данный фильм отсутствует в базе данных.");
-        }
+        isFilmInStorage(film.getId());
         films.put(film.getId(), film);
     }
 
-    private void checkName(Film film) {
-        if (film.getName().isBlank() || film.getName() == null) {
-            log.debug("Получено пустое название фильма - {}.", film.getName());
-            throw new ValidationException("Название не может быть пустым.");
-        }
+    @Override
+    public void removeFilm(Film film) {
+        isFilmInStorage(film.getId());
+        films.remove(film.getId());
     }
 
-    private void checkDescription(Film film) {
-        if (200 < film.getDescription().length()) {
-            log.debug("Длинна фильма превышает 200 символов - {}.", film.getDescription().length());
-            throw new ValidationException("Максимальная длина описания — 200 символов.");
+    private void isFilmInStorage(int id) {
+        if (!films.containsKey(id)) {
+            log.debug("Данный фильм отсутствует в базе данных.");
+            throw new FilmNotFoundException("Данный фильм отсутствует в базе данных.");
         }
-    }
-
-    private void checkDate(Film film) {
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            log.debug("Дата релиза фильма до 28-12-1985 - {}.", film.getReleaseDate());
-            throw new ValidationException("Дата релиза должна быть не раньше 28 декабря 1895 года.");
-        }
-    }
-
-    private void checkDuration(Film film) {
-        if (film.getDuration() < 0) {
-            log.debug("Продолжительность фильма - отрицательное число - {}.", film.getDuration());
-            throw new ValidationException("Продолжительность фильма должна быть положительной.");
-        }
-    }
-
-    private void doAllChecks(Film film) {
-        checkName(film);
-        checkDescription(film);
-        checkDate(film);
-        checkDuration(film);
     }
 }

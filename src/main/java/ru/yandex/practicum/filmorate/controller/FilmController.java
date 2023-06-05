@@ -11,26 +11,19 @@ import java.util.List;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private final InMemoryFilmStorage inMemoryFilmStorage;
 
-    public FilmController(InMemoryFilmStorage inMemoryFilmStorage) {
-        this.inMemoryFilmStorage = inMemoryFilmStorage;
-    }
 
     @PostMapping
     public Film create(@RequestBody Film film) {
-        inMemoryFilmStorage.createFilm(film);
         return film;
     }
 
     @PutMapping
     public Film update(@RequestBody Film film) {
-    inMemoryFilmStorage.updateFilm(film);
         return film;
     }
 
     @GetMapping
     public List<Film> findAll() {
-        return inMemoryFilmStorage.findAll();
     }
 }
