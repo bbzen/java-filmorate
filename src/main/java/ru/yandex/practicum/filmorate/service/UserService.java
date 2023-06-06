@@ -37,11 +37,15 @@ public class UserService {
         return userStorage.findAll();
     }
 
-    public void addToFriends(User userA, User userB) {
-        if (userStorage.containsUser(userA.getId()) && userStorage.containsUser(userB.getId())) {
-            userA.addFriend(userB);
-            userB.addFriend(userA);
-            log.debug("Пользователи {} {} успешно добавлены в друзья.", userA.getEmail(), userB.getEmail());
+    public User findById(int id) {
+        return userStorage.getUserById(id);
+    }
+
+    public void addToFriends(int adder, int friendId) {
+        if (userStorage.containsUser(adder) && userStorage.containsUser(friendId)) {
+            userStorage.getUserById(adder).addFriend(friendId);
+            userStorage.getUserById(friendId).addFriend(adder);
+            log.debug("Пользователи {} {} успешно добавлены в друзья.", adder, friendId);
         }
     }
 

@@ -3,10 +3,8 @@ package ru.yandex.practicum.filmorate.storage.film;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +22,11 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     public List<Film> findAll() {
         return new ArrayList<>(films.values());
+    }
+
+    public Film findById(int id) {
+        isFilmInStorage(id);
+        return films.get(id);
     }
 
     @Override

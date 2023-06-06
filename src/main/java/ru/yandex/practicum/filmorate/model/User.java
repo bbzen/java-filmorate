@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -29,11 +28,11 @@ public class User {
         return friends.contains(user.getId());
     }
 
-    public boolean addFriend(User user) {
-        return friends.add(user.getId());
+    public void addFriend(int userId) {
+        friends.add(userId);
     }
 
-    public boolean removeFriend(User user) {
-        return friends.remove(user.getId());
+    public void removeFriend(User user) {
+        friends.remove(user.getId());
     }
 }

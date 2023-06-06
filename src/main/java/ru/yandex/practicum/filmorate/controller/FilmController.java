@@ -33,4 +33,9 @@ public class FilmController {
     public List<Film> findAll() {
         return filmService.findAll();
     }
+
+    @GetMapping("/{id}")
+    public Film findById(@PathVariable int id) {
+        return filmService.findById(id);
+    }
 }

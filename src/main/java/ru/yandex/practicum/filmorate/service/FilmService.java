@@ -28,6 +28,18 @@ public class FilmService {
         return filmStorage.findAll();
     }
 
+    public Film findById(int id) {
+        return filmStorage.findById(id);
+    }
+
+    public List<Film> findTopTen() {
+        return filmStorage.findAll()
+                .stream()
+                .sorted(Comparator.comparingInt(Film::getLikesAmount).reversed())
+                .limit(10)
+                .collect(Collectors.toList());
+    }
+
     public void createFilm(Film film) {
         doAllChecks(film);
         filmStorage.createFilm(film);
@@ -40,14 +52,6 @@ public class FilmService {
 
     public void removeFilm(Film film) {
         filmStorage.removeFilm(film);
-    }
-
-    public List<Film> getTopTen() {
-        return filmStorage.findAll()
-                .stream()
-                .sorted(Comparator.comparingInt(Film::getLikesAmount).reversed())
-                .limit(10)
-                .collect(Collectors.toList());
     }
 
     public void addLike(Film film, User user) {
