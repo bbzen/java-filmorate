@@ -57,7 +57,9 @@ public class UserService {
         }
     }
 
-    public List<User> findMutualFriends(User userA, User userB) {
+    public List<User> findMutualFriends(int id, int otherId) {
+        User userA = userStorage.getUserById(id);
+        User userB = userStorage.getUserById(otherId);
         List<User> result = new ArrayList<>();
 
         for (Integer friendId : userA.getFriends()) {
