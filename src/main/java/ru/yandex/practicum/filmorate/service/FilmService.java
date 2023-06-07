@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -18,10 +17,13 @@ import java.util.stream.Collectors;
 @Service
 public class FilmService {
     private final FilmStorage filmStorage;
+    private final UserService userService;
+    private static final int MIN_FILMS_COUNT = 10;
 
     @Autowired
-    public FilmService(InMemoryFilmStorage filmStorage) {
+    public FilmService(FilmStorage filmStorage, UserService userService) {
         this.filmStorage = filmStorage;
+        this.userService = userService;
     }
 
     public List<Film> findAll() {
@@ -32,11 +34,15 @@ public class FilmService {
         return filmStorage.findById(id);
     }
 
-    public List<Film> findTopTen() {
+    public List<Film> findTopFilms(Integer count) {
+        int amount = MIN_FILMS_COUNT;
+        if (count != null) {
+            amount = count;
+        }
         return filmStorage.findAll()
                 .stream()
                 .sorted(Comparator.comparingInt(Film::getLikesAmount).reversed())
-                .limit(10)
+                .limit(amount)
                 .collect(Collectors.toList());
     }
 
@@ -54,12 +60,14 @@ public class FilmService {
         filmStorage.removeFilm(film);
     }
 
-    public void addLike(Film film, User user) {
-        film.addLike(user);
+    public Film addLike(int id, int userId) {
+        Film film = filmStorage.findById(id);
+        User user = userService.findById(userId);
+        return film.addLike(user);
     }
 
-    public void removeLike(Film film, User user) {
-        film.removeLike(user);
+    public void removeLike(int filmId, int userId) {
+        filmStorage.findById(filmId).removeLike(userId);
     }
 
     private void checkName(Film film) {

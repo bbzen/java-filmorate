@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -41,20 +42,11 @@ public class UserService {
         return userStorage.getUserById(id);
     }
 
-    public void addToFriends(int adder, int friendId) {
-        if (userStorage.containsUser(adder) && userStorage.containsUser(friendId)) {
-            userStorage.getUserById(adder).addFriend(friendId);
-            userStorage.getUserById(friendId).addFriend(adder);
-            log.debug("Пользователи {} {} успешно добавлены в друзья.", adder, friendId);
-        }
-    }
-
-    public void removeFromFriends(User userA, User userB) {
-        if (userStorage.containsUser(userA.getId()) && userStorage.containsUser(userB.getId())) {
-            userA.removeFriend(userB);
-            userB.removeFriend(userA);
-            log.debug("Пользователи {} {} успешно удалены из друзей.", userA.getEmail(), userB.getEmail());
-        }
+    public List<User> findUserFriends(int id) {
+        return userStorage.getUserById(id)
+                .getFriends().stream()
+                .map(userStorage::getUserById)
+                .collect(Collectors.toList());
     }
 
     public List<User> findMutualFriends(int id, int otherId) {
@@ -69,6 +61,25 @@ public class UserService {
             }
         }
         return result;
+    }
+
+    public void addToFriends(int adder, int friendId) {
+        if (userStorage.containsUser(adder) && userStorage.containsUser(friendId)) {
+            userStorage.getUserById(adder).addFriend(friendId);
+            userStorage.getUserById(friendId).addFriend(adder);
+            log.debug("Пользователи {} {} успешно добавлены в друзья.", adder, friendId);
+        }
+    }
+
+    public void removeFromFriends(int id, int otherId) {
+        User userA = userStorage.getUserById(id);
+        User userB = userStorage.getUserById(otherId);
+
+        if (userStorage.containsUser(userA.getId()) && userStorage.containsUser(userB.getId())) {
+            userA.removeFriend(userB);
+            userB.removeFriend(userA);
+            log.debug("Пользователи {} {} успешно удалены из друзей.", userA.getEmail(), userB.getEmail());
+        }
     }
 
     private void checkName(User user) {

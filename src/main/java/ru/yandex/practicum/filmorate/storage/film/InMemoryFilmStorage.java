@@ -25,7 +25,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     public Film findById(int id) {
-        isFilmInStorage(id);
+        isFilmPresent(id);
         return films.get(id);
     }
 
@@ -37,17 +37,17 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public void updateFilm(Film film) {
-        isFilmInStorage(film.getId());
+        isFilmPresent(film.getId());
         films.put(film.getId(), film);
     }
 
     @Override
     public void removeFilm(Film film) {
-        isFilmInStorage(film.getId());
+        isFilmPresent(film.getId());
         films.remove(film.getId());
     }
 
-    private void isFilmInStorage(int id) {
+    private void isFilmPresent(int id) {
         if (!films.containsKey(id)) {
             log.debug("Данный фильм отсутствует в базе данных.");
             throw new FilmNotFoundException("Данный фильм отсутствует в базе данных.");
