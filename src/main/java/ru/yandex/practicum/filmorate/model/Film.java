@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -34,14 +33,11 @@ public class Film {
         return whoLikedIt.size();
     }
 
-    public boolean containsLike(User user) {
-        return whoLikedIt.contains(user.getId());
+    public boolean containsLike(int userId) {
+        return whoLikedIt.contains(userId);
     }
 
     public void removeLike(int userId) {
-        if (!(whoLikedIt.contains(userId))) {
-            throw new UserNotFoundException("Указанный пользователь не лайкал указанный фильм.");
-        }
         whoLikedIt.remove(userId);
     }
 }
