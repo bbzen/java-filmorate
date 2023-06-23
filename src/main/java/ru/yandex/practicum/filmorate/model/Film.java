@@ -13,15 +13,19 @@ public class Film {
     private String description;
     private final LocalDate releaseDate;
     private final long duration;
+    private final String rating;
     private final Set<Integer> whoLikedIt;
+    private final Set<String> genre;
 
-    public Film(int id, String name, String description, LocalDate releaseDate, long duration) {
+    public Film(int id, String name, String description, LocalDate releaseDate, long duration, String rating) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
+        this.rating = rating;
         whoLikedIt = new HashSet<>();
+        genre = new HashSet<>();
     }
 
     public Film addLike(User user) {
