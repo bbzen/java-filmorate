@@ -14,8 +14,16 @@ public class User {
     private String name;
     private final LocalDate birthday;
     private final Set<Integer> requestedFriendship;
-    private final Set<Integer> incomeFriendshipRequest;
-    private final Set<Integer> friends;
+    private final Set<Integer> acceptedFriendship;
+
+    public User(String email, String login, String name, LocalDate birthday) {
+        this.email = email;
+        this.login = login;
+        this.name = name;
+        this.birthday = birthday;
+        requestedFriendship = new HashSet<>();
+        acceptedFriendship = new HashSet<>();
+    }
 
     public User(int id, String email, String login, String name, LocalDate birthday) {
         this.id = id;
@@ -24,19 +32,27 @@ public class User {
         this.name = name;
         this.birthday = birthday;
         requestedFriendship = new HashSet<>();
-        incomeFriendshipRequest = new HashSet<>();
-        friends = new HashSet<>();
+        acceptedFriendship = new HashSet<>();
     }
 
     public boolean containsFriend(User user) {
-        return friends.contains(user.getId());
+        return acceptedFriendship.contains(user.getId());
     }
 
-    public void addFriend(int userId) {
-        friends.add(userId);
+    public boolean areUsersFriends(User user) {
+        return acceptedFriendship.contains(user.getId()) && user.containsFriend(this);
+    }
+
+    public void incomeFSRequest(User user) {
+        requestedFriendship.add(user.getId());
+    }
+
+    public void addFriend(User user) {
+        acceptedFriendship.add(user.getId());
+        requestedFriendship.add(user.getId());
     }
 
     public void removeFriend(User user) {
-        friends.remove(user.getId());
+        acceptedFriendship.remove(user.getId());
     }
 }
