@@ -8,9 +8,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -22,10 +20,10 @@ public class UserService {
         this.userStorage = userStorage;
     }
 
-    public void createUser(User user) {
+    public User createUser(User user) {
         runAllChecks(user);
         checkName(user);
-        userStorage.createUser(user);
+        return userStorage.createUser(user);
     }
 
     public void updateUser(User user) {
@@ -42,26 +40,26 @@ public class UserService {
         return userStorage.getUserById(id);
     }
 
-    public List<User> findUserFriends(int id) {
-        return userStorage.getUserById(id)
-                .getFriends().stream()
-                .map(userStorage::getUserById)
-                .collect(Collectors.toList());
-    }
+//    public List<User> findUserFriends(int id) {
+//        return userStorage.getUserById(id)
+//                .getFriends().stream()
+//                .map(userStorage::getUserById)
+//                .collect(Collectors.toList());
+//    }
 
-    public List<User> findMutualFriends(int id, int otherId) {
-        User userA = userStorage.getUserById(id);
-        User userB = userStorage.getUserById(otherId);
-        List<User> result = new ArrayList<>();
-
-        for (Integer friendId : userA.getFriends()) {
-            User temp = userStorage.getUserById(friendId);
-            if (userB.containsFriend(temp)) {
-                result.add(temp);
-            }
-        }
-        return result;
-    }
+//    public List<User> findMutualFriends(int id, int otherId) {
+//        User userA = userStorage.getUserById(id);
+//        User userB = userStorage.getUserById(otherId);
+//        List<User> result = new ArrayList<>();
+//
+//        for (Integer friendId : userA.getFriends()) {
+//            User temp = userStorage.getUserById(friendId);
+//            if (userB.containsFriend(temp)) {
+//                result.add(temp);
+//            }
+//        }
+//        return result;
+//    }
 
     public void addToFriends(User adder, User requester) {
         int adderId = adder.getId();

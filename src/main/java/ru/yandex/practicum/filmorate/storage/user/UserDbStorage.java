@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -21,11 +22,20 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public void createUser(User user) {
+    public User createUser(User user) {
+//        String sqlUser = "insert into users (, , , ) values (?, ?, ? ,?)";
+//        String sqlFriends = "insert into friends (requester_id, acceptor_id) values (?, ?)";
+        Set<Integer> requestedFriendship = user.getRequestedFriendship();
+        Set<Integer> acceptedFriendship = user.getAcceptedFriendship();
+
+
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getDataSource())
                 .withTableName("users")
                 .usingGeneratedKeyColumns("user_id");
-        Map<String, String>
+        Map<String, Object> params = Map.of("email", user.getEmail(), "login", user.getLogin(), "user_name", user.getName(), "birthday", user.getBirthday());
+        Number id = simpleJdbcInsert.executeAndReturnKey(params);
+        user.setId(id.intValue());
+        return user;
     }
 
     @Override
