@@ -9,7 +9,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Objects;
 
 @Slf4j
 @Component
@@ -23,13 +23,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User createUser(User user) {
-//        String sqlUser = "insert into users (, , , ) values (?, ?, ? ,?)";
-//        String sqlFriends = "insert into friends (requester_id, acceptor_id) values (?, ?)";
-        Set<Integer> requestedFriendship = user.getRequestedFriendship();
-        Set<Integer> acceptedFriendship = user.getAcceptedFriendship();
-
-
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getDataSource())
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(Objects.requireNonNull(jdbcTemplate.getDataSource()))
                 .withTableName("users")
                 .usingGeneratedKeyColumns("user_id");
         Map<String, Object> params = Map.of("email", user.getEmail(), "login", user.getLogin(), "user_name", user.getName(), "birthday", user.getBirthday());
@@ -39,8 +33,11 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public void updateUser(User user) {
-
+    public User updateUser(User user) {
+        String sql = "update users set email = ?, login = ?, user_name = ?, birthday = ? where user_id = ?";
+        jdbcTemplate.update(sql, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getId());
+        log.debug("User" + user + "was updated.");
+        return user;
     }
 
     @Override

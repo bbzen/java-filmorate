@@ -1,12 +1,14 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@NoArgsConstructor(force = true)
 public class User {
     private int id;
     private final String email;
@@ -15,6 +17,7 @@ public class User {
     private final LocalDate birthday;
     private final Set<Integer> requestedFriendship;
     private final Set<Integer> acceptedFriendship;
+
 
     public User(String login, String name, String email, LocalDate birthday) {
         this.email = email;
@@ -34,6 +37,8 @@ public class User {
         requestedFriendship = new HashSet<>();
         acceptedFriendship = new HashSet<>();
     }
+
+
 
     public boolean containsFriend(User user) {
         return acceptedFriendship.contains(user.getId());
