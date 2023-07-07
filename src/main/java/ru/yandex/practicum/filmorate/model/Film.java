@@ -66,6 +66,10 @@ public class Film {
         likes.addAll(likesIncome);
     }
 
+    public void applyGenresData(List<Genre> genresIncome) {
+        genres.addAll(genresIncome);
+    }
+
     public Integer getMpaId() {
         if (mpa != null) {
             return mpa.getId();

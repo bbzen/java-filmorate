@@ -28,7 +28,10 @@ public class FilmService {
     }
 
     public List<Film> findAll() {
-        return filmStorage.findAll();
+        return filmStorage.findAll()
+                .stream()
+                .sorted(Comparator.comparingInt(Film::getId))
+                .collect(Collectors.toList());
     }
 
     public Film findById(int id) {
@@ -52,9 +55,9 @@ public class FilmService {
         filmStorage.createFilm(film);
     }
 
-    public void updateFilm(Film film) {
+    public Film updateFilm(Film film) {
         doAllChecks(film);
-        filmStorage.updateFilm(film);
+        return filmStorage.updateFilm(film);
     }
 
     public void removeFilm(Film film) {

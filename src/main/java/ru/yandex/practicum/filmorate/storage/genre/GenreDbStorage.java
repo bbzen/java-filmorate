@@ -29,7 +29,7 @@ public class GenreDbStorage implements GenreStorage {
 
     @Override
     public List<Genre> findAllGenres() {
-        return null;
+        return jdbcTemplate.query("select * from genres", genreRowMapper());
     }
 
     private RowMapper<Genre> genreRowMapper() {

@@ -40,7 +40,7 @@ public class FilmDbStorage implements FilmStorage {
             film.setId(id.intValue());
             updateFilmGenre(film);
         log.debug("Фильм " + film.getName() + " добавлен.");
-        return film;
+        return findById(film.getId());
     }
 
     @Override
@@ -50,7 +50,7 @@ public class FilmDbStorage implements FilmStorage {
             jdbcTemplate.update(sqlFilm, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpaId(), film.getId());
             updateLikes(film);
             updateFilmGenre(film);
-        return film;
+        return findById(film.getId());
     }
 
     @Override
@@ -65,6 +65,7 @@ public class FilmDbStorage implements FilmStorage {
         for (Film film : films) {
             applyMpaFromDb(film);
             applyLikesFromDb(film);
+            applyGenresFromDb(film);
         }
         return films;
     }
@@ -74,6 +75,7 @@ public class FilmDbStorage implements FilmStorage {
         Film film = getFilmListById(id).get(0);
         applyMpaFromDb(film);
         applyLikesFromDb(film);
+        applyGenresFromDb(film);
         return film;
     }
 
@@ -103,6 +105,12 @@ public class FilmDbStorage implements FilmStorage {
         return film;
     }
 
+    private Film applyGenresFromDb(Film film) {
+        List<Genre> genres = jdbcTemplate.query("select fg.genre_id, g.genre_name from film_genres fg join genres g on g.genre_id = fg.genre_id where film_id = ?", genreRowMapper(), film.getId());
+        film.applyGenresData(genres);
+        return film;
+    }
+
     private RowMapper<Film> filmRowMapper() {
         return (rs, rowNum) -> new Film(
                 rs.getInt("film_id"),
@@ -117,6 +125,13 @@ public class FilmDbStorage implements FilmStorage {
         return (rs, rowNum) -> new Mpa(
                 rs.getString("mpa_name"),
                 rs.getInt("film_mpa")
+        );
+    }
+
+    private RowMapper<Genre> genreRowMapper() {
+        return (rs, rowNum) -> new Genre(
+                rs.getString("genre_name"),
+                rs.getInt("genre_id")
         );
     }
 
@@ -136,6 +151,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private void updateFilmGenre(Film film) {
+        jdbcTemplate.update("delete from film_genres where film_id = ?", film.getId());
         SimpleJdbcInsert simpleGenreInsert = new SimpleJdbcInsert(Objects.requireNonNull(jdbcTemplate.getDataSource()))
                 .withTableName("film_genres");
         if (!film.getGenres().isEmpty()) {
