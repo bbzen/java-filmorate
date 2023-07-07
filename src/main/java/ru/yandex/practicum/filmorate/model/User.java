@@ -17,7 +17,7 @@ public class User {
     private final String login;
     private String name;
     private final LocalDate birthday;
-    private final Set<Integer> requestedFriendship = new HashSet<>();;
+    private final Set<Integer> requestedFriendship = new HashSet<>();
     private final Set<Integer> acceptedFriendship = new HashSet<>();
 
     public User(String login, String name, String email, LocalDate birthday) {
@@ -54,7 +54,7 @@ public class User {
     public void removeFriend(int userId) {
         try {
             requestedFriendship.remove(userId);
-        } catch (Exception e ) {
+        } catch (Exception e) {
             throw new UserNotFoundException("Пользователя " + userId + " нет в друзьях у пользователя " + this.getLogin());
         }
     }
@@ -62,7 +62,7 @@ public class User {
     public void removeAcceptation(int userId) {
         try {
             acceptedFriendship.remove(userId);
-        } catch (Exception e ) {
+        } catch (Exception e) {
             throw new UserNotFoundException("Пользователя " + userId + " нет в друзьях у пользователя " + this.getLogin());
         }
     }

@@ -60,7 +60,7 @@ public class UserDbStorage implements UserStorage {
                 Map<String, Integer> params = Map.of("requester_id", id, "acceptor_id", user.getId());
                 try {
                     simpleJdbcInsert.execute(params);
-                } catch (DuplicateKeyException e ) {
+                } catch (DuplicateKeyException e) {
                     log.debug("Повторяющееся значение пары ID пользователей при обновлении таблицы Friends.");
                 }
             }
