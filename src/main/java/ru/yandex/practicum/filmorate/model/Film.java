@@ -20,7 +20,7 @@ public class Film {
     private int rate;
     private Mpa mpa;
     private List<Genre> genres = new ArrayList<>();
-    private final Set<Integer> likes = new HashSet<>();;
+    private final Set<Integer> likes = new HashSet<>();
 
     public Film(int id, String name, String description, LocalDate releaseDate, long duration, Mpa mpa) {
         this.id = id;
