@@ -30,15 +30,17 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void createFilm(Film film) {
+    public Film createFilm(Film film) {
         film.setId(++id);
         films.put(film.getId(), film);
+        return film;
     }
 
     @Override
-    public void updateFilm(Film film) {
+    public Film updateFilm(Film film) {
         isFilmPresent(film.getId());
         films.put(film.getId(), film);
+        return film;
     }
 
     @Override

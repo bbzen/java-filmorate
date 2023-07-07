@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
+import java.util.Collection;
 import java.util.List;
 
 @Slf4j
@@ -29,13 +30,13 @@ public class UserController {
         return user;
     }
 
-//    @PutMapping("{id}/friends/{friendId}")
-//    public void addFriend(@PathVariable int id, @PathVariable int friendId) {
-//        userService.addToFriends(id, friendId);
-//    }
+    @PutMapping("{id}/friends/{friendId}")
+    public void addFriend(@PathVariable int id, @PathVariable int friendId) {
+        userService.addToFriends(id, friendId);
+    }
 
     @GetMapping
-    public List<User> findAll() {
+    public Collection<User> findAll() {
         return userService.findAll();
     }
 
@@ -44,15 +45,15 @@ public class UserController {
         return userService.findById(id);
     }
 
-//    @GetMapping("/{id}/friends")
-//    public List<User> findUserFriends(@PathVariable int id) {
-//        return userService.findUserFriends(id);
-//    }
+    @GetMapping("/{id}/friends")
+    public List<User> findUserFriends(@PathVariable int id) {
+        return userService.findUserFriends(id);
+    }
 
-//    @GetMapping("/{id}/friends/common/{otherId}")
-//    public List<User> findCommonFriends(@PathVariable int id, @PathVariable int otherId) {
-//        return userService.findMutualFriends(id, otherId);
-//    }
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> findCommonFriends(@PathVariable int id, @PathVariable int otherId) {
+        return userService.findMutualFriends(id, otherId);
+    }
 
     @DeleteMapping("/{id}/friends/{friendId}")
     public void removeFromFriends(@PathVariable int id, @PathVariable int friendId) {

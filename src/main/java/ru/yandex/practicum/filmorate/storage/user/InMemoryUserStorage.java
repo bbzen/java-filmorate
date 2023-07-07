@@ -51,6 +51,11 @@ public class InMemoryUserStorage implements UserStorage {
         return new ArrayList<>(users.values());
     }
 
+    @Override
+    public void removeFS(int removerId, int acceptorId) {
+
+    }
+
     public boolean containsUser(int id) {
         if (!users.containsKey(id)) {
             log.debug("Пользователь с ID {} не зарегистрирован.", id);
