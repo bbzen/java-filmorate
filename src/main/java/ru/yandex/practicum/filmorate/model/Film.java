@@ -4,9 +4,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -17,34 +17,59 @@ public class Film {
     private String description;
     private final LocalDate releaseDate;
     private final long duration;
-    private final Map<String, Integer> mpa = new HashMap<>();
-    private final Set<Integer> whoLikedIt = new HashSet<>();;
-    private final Set<String> genre = new HashSet<>();;
+    private int rate;
+    private Mpa mpa;
+    private List<Genre> genres = new ArrayList<>();
+    private final Set<Integer> likes = new HashSet<>();;
 
-    public Film(int id, String name, String description, LocalDate releaseDate, long duration, Map<String, Integer> mpa) {
+    public Film(int id, String name, String description, LocalDate releaseDate, long duration, Mpa mpa) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
-        this.mpa.put("id", mpa.get("id"));
+        this.mpa = mpa;
+    }
+
+    public Film(int id, String name, String description, LocalDate releaseDate, long duration) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
     }
 
     public Film addLike(User user) {
-        whoLikedIt.add(user.getId());
+        likes.add(user.getId());
         return this;
     }
 
     public int getLikesAmount() {
-        return whoLikedIt.size();
+        return likes.size();
     }
 
     public boolean containsLike(int userId) {
-        return whoLikedIt.contains(userId);
+        return likes.contains(userId);
     }
 
     public void removeLike(int userId) {
-        whoLikedIt.remove(userId);
+        likes.remove(userId);
     }
 
+    public void applyMpaData(List<Mpa> mpaIncome) {
+        if (mpaIncome.size() == 1) {
+            this.mpa = mpaIncome.get(0);
+        }
+    }
+
+    public void applyLikesData(List<Integer> likesIncome) {
+        likes.addAll(likesIncome);
+    }
+
+    public Integer getMpaId() {
+        if (mpa != null) {
+            return mpa.getId();
+        }
+        return null;
+    }
 }

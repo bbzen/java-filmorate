@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -18,7 +17,6 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserStorage userStorage;
 
-    @Autowired
     public UserService(UserStorage userStorage) {
         this.userStorage = userStorage;
     }
@@ -75,18 +73,6 @@ public class UserService {
             log.debug("Пользователь {} добавил в друзья пользователя {}.", requesterId, acceptorId);
         }
     }
-
-//    public void acceptFs(int requesterId, int acceptorId) {
-//    User requester = userStorage.getUserById(requesterId);
-//    User acceptor = userStorage.getUserById(acceptorId);
-//        if (userStorage.containsUser(requesterId) && userStorage.containsUser(acceptorId)) {
-//            acceptor.takeFsRequest(requesterId);
-//            acceptor.acceptFs(requesterId);
-//            userStorage.updateUser(acceptor);
-//
-//        }
-//    }
-
 
     public void removeFromFriends(int removerId, int toRemoveId) {
         User remover = userStorage.getUserById(removerId);

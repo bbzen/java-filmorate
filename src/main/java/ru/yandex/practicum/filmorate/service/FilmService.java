@@ -64,7 +64,9 @@ public class FilmService {
     public Film addLike(int id, int userId) {
         Film film = filmStorage.findById(id);
         User user = userService.findById(userId);
-        return film.addLike(user);
+        film.addLike(user);
+        filmStorage.updateFilm(film);
+        return film;
     }
 
     public void removeLike(int filmId, int userId) {
@@ -73,6 +75,7 @@ public class FilmService {
             throw new UserNotFoundException("Указанный пользователь не лайкал указанный фильм.");
         }
         currentFilm.removeLike(userId);
+        filmStorage.updateFilm(currentFilm);
     }
 
     private void checkName(Film film) {
