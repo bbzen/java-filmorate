@@ -73,7 +73,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public void removeUser(User user) {
-        String sql = "delete from users where user_id = ? cascade";
+        String sql = "delete from users where user_id = ?";
         jdbcTemplate.update(sql, user.getId());
         log.debug("User " + user.getLogin() + " has been removed.");
     }
@@ -105,6 +105,7 @@ public class UserDbStorage implements UserStorage {
         return true;
     }
 
+    @Override
     public void removeFS(int removerId, int acceptorId) {
         String sql = "delete from friends where requester_id = ? and acceptor_id = ?";
         jdbcTemplate.update(sql, acceptorId, removerId);
