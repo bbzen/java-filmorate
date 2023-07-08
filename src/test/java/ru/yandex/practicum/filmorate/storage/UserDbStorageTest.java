@@ -1,15 +1,12 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import de.cronn.testutils.h2.H2Util;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -28,8 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@ExtendWith(SpringExtension.class)
-@Import(H2Util.class)
 class UserDbStorageTest {
     private final UserDbStorage userStorage;
     User userFirst;
@@ -39,11 +34,6 @@ class UserDbStorageTest {
     Film filmToUpd;
     Mpa mpa;
     Genre genre;
-
-    @BeforeEach
-    void resetDatabase(@Autowired H2Util h2Util) {
-        h2Util.resetDatabase();
-    }
 
     @BeforeEach
     void setUp() {
@@ -56,6 +46,7 @@ class UserDbStorageTest {
         filmToUpd = new Film(1, "Movie Name upd", "Movie description upd", LocalDate.of(2000, 6, 24), 120L, 1, new Mpa(3), List.of(genre));
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     public void testCreateAndFindUserById() {
         userStorage.createUser(userFirst);
@@ -72,6 +63,7 @@ class UserDbStorageTest {
                 );
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void testUpdateUser() {
         userStorage.createUser(userFirst);
@@ -90,6 +82,7 @@ class UserDbStorageTest {
                 );
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void testRemoveUser() {
         userStorage.createUser(userFirst);
@@ -103,6 +96,7 @@ class UserDbStorageTest {
         }
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void testFindAllUsersInDb() {
         userStorage.createUser(userFirst);
@@ -113,6 +107,7 @@ class UserDbStorageTest {
         assertEquals(expectingList, result);
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void testContainsUser() {
         User expectingUser = userStorage.createUser(userFirst);
