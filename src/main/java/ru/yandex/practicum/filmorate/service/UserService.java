@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserStorage userStorage;
 
+    @Autowired
     public UserService(UserStorage userStorage) {
         this.userStorage = userStorage;
     }
@@ -38,32 +40,32 @@ public class UserService {
     }
 
     public User findById(int id) {
-        return userStorage.getUserById(id);
+        return userStorage.findUserById(id);
     }
 
     public List<User> findUserFriends(int id) {
-        return userStorage.getUserById(id)
+        return userStorage.findUserById(id)
                 .getFriends().stream()
-                .map(userStorage::getUserById)
+                .map(userStorage::findUserById)
                 .collect(Collectors.toList());
     }
 
     public List<User> findMutualFriends(int id, int otherId) {
-        Collection<Integer> userOneFriends = userStorage.getUserById(id).getFriends();
-        Collection<Integer> userTwoFriends = userStorage.getUserById(otherId).getFriends();
+        Collection<Integer> userOneFriends = userStorage.findUserById(id).getFriends();
+        Collection<Integer> userTwoFriends = userStorage.findUserById(otherId).getFriends();
         List<User> result = new ArrayList<>();
 
         for (Integer friendId : userOneFriends) {
             if (userTwoFriends.contains(friendId)) {
-                result.add(userStorage.getUserById(friendId));
+                result.add(userStorage.findUserById(friendId));
             }
         }
         return result;
     }
 
     public void addToFriends(int acceptorId, int requesterId) {
-        User acceptor = userStorage.getUserById(acceptorId);
-        User requester = userStorage.getUserById(requesterId);
+        User acceptor = userStorage.findUserById(acceptorId);
+        User requester = userStorage.findUserById(requesterId);
         if (userStorage.containsUser(acceptorId) && userStorage.containsUser(requesterId)) {
             acceptor.takeFsRequest(requesterId);
             requester.askFS(acceptorId);
@@ -75,8 +77,8 @@ public class UserService {
     }
 
     public void removeFromFriends(int removerId, int toRemoveId) {
-        User remover = userStorage.getUserById(removerId);
-        User toRemove = userStorage.getUserById(toRemoveId);
+        User remover = userStorage.findUserById(removerId);
+        User toRemove = userStorage.findUserById(toRemoveId);
         if (remover.hasFriend(toRemoveId) && toRemove.hasAcceptation(removerId)) {
             remover.removeFriend(toRemoveId);
             toRemove.removeAcceptation(removerId);
