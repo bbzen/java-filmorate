@@ -1,12 +1,16 @@
 package ru.yandex.practicum.filmorate;
 
+import de.cronn.testutils.h2.H2Util;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -17,6 +21,7 @@ import ru.yandex.practicum.filmorate.storage.mpa.MpaDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +32,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
+@ExtendWith(SpringExtension.class)
+@Import(H2Util.class)
 class FilmorateApplicationTests {
 	private final UserDbStorage userStorage;
 	private final FilmDbStorage filmDbStorage;
@@ -39,6 +46,11 @@ class FilmorateApplicationTests {
 	Film filmToUpd;
 	Mpa mpa;
 	Genre genre;
+
+	@BeforeEach
+	void resetDatabase(@Autowired H2Util h2Util) {
+		h2Util.resetDatabase();
+	}
 
 	@BeforeEach
 	void setUp() {
@@ -54,12 +66,13 @@ class FilmorateApplicationTests {
 	@Test
 	@DisplayName("Test - create & findUserById.")
 	public void testCreateAndFindUserById() {
-		Optional<User> userOptional = Optional.of(userStorage.findUserById(2));
+		userStorage.createUser(userFirst);
+		Optional<User> userOptional = Optional.of(userStorage.findUserById(1));
 
 		assertThat(userOptional)
 				.isPresent()
 				.hasValueSatisfying(user ->
-						assertThat(user).hasFieldOrPropertyWithValue("id", 2)
+						assertThat(user).hasFieldOrPropertyWithValue("id", 1)
 								.hasFieldOrPropertyWithValue("login", userFirst.getLogin())
 								.hasFieldOrPropertyWithValue("name", userFirst.getName())
 								.hasFieldOrPropertyWithValue("email", userFirst.getEmail())
@@ -106,8 +119,9 @@ class FilmorateApplicationTests {
 		userStorage.createUser(userFirst);
 		userStorage.createUser(userSecond);
 
-		List<User> expectingList = List.of(userStorage.findUserById(1), userStorage.findUserById(2), userStorage.findUserById(3));
-		assertEquals(expectingList, userStorage.findAll());
+		List<User> expectingList = List.of(userStorage.findUserById(1), userStorage.findUserById(2));
+		Collection<User> result = userStorage.findAll();
+		assertEquals(expectingList, result);
 	}
 
 	@Test
