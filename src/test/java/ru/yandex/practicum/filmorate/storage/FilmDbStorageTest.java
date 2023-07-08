@@ -1,17 +1,13 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import de.cronn.testutils.h2.H2Util;
+
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -28,8 +24,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @SpringBootTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@ExtendWith(SpringExtension.class)
-@Import(H2Util.class)
+
 class FilmDbStorageTest {
     private final FilmDbStorage filmStorage;
     private final MpaDbStorage mpaStorage;
@@ -47,11 +42,6 @@ class FilmDbStorageTest {
         filmFirst = new Film("First Movie Name", "First Movie description", LocalDate.of(2000, 5, 24), 120, new Mpa(1));
         filmSecond = new Film("Second Movie Name", "Second Movie description", LocalDate.of(2000, 5, 24), 120, new Mpa(1));
         filmToUpdate = new Film(1, "Movie Name upd", "Movie description upd", LocalDate.of(2000, 6, 24), 120L, 1, new Mpa(1), List.of(genre));
-    }
-
-    @AfterEach
-    void resetDatabase(@Autowired H2Util h2Util) {
-        h2Util.dropAllObjects();
     }
 
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)

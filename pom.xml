@@ -54,13 +54,6 @@
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
 		</dependency>
-
-		<dependency>
-			<groupId>de.cronn</groupId>
-			<artifactId>test-utils</artifactId>
-			<version>0.8.0</version>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 
 	<build>
