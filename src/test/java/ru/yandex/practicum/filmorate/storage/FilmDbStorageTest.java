@@ -50,7 +50,7 @@ class FilmDbStorageTest {
 
     @AfterEach
     void resetDatabase(@Autowired H2Util h2Util) {
-        h2Util.resetDatabase();
+        h2Util.dropAllObjects();
     }
 
     @Test
