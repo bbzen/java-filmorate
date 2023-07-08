@@ -57,7 +57,9 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public void removeFilm(Film film) {
-
+        String sql = "delete from films where film_id = ?";
+        jdbcTemplate.update(sql, film.getId());
+        log.debug("Фильм " + film.getId() + " удален.");
     }
 
     @Override
@@ -81,7 +83,8 @@ public class FilmDbStorage implements FilmStorage {
         return film;
     }
 
-    private boolean containsFilm(int id) {
+    @Override
+    public boolean containsFilm(int id) {
         getFilmListById(id);
         return true;
     }

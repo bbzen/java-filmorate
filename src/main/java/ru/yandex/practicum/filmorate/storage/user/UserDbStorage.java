@@ -75,7 +75,7 @@ public class UserDbStorage implements UserStorage {
     public void removeUser(User user) {
         String sql = "delete from users where user_id = ?";
         jdbcTemplate.update(sql, user.getId());
-        log.debug("User " + user.getLogin() + " has been removed.");
+        log.debug("Пользователь " + user.getLogin() + " удален.");
     }
 
     @Override

@@ -30,6 +30,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public boolean containsFilm(int id) {
+        return films.containsKey(id);
+    }
+
+    @Override
     public Film createFilm(Film film) {
         film.setId(++id);
         films.put(film.getId(), film);

@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -46,7 +48,7 @@ class FilmDbStorageTest {
 
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
-    public void createFilm() {
+    public void createFilmAndFindById() {
         filmStorage.createFilm(filmFirst);
         Optional<Film> filmOptional = Optional.of(filmStorage.findById(1));
 
@@ -61,19 +63,52 @@ class FilmDbStorageTest {
                 );
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void updateFilm() {
+        filmStorage.createFilm(filmFirst);
+        filmStorage.updateFilm(filmToUpdate);
+        Optional<Film> filmOptional = Optional.of(filmStorage.findById(1));
+
+        assertThat(filmOptional)
+                .isPresent()
+                .hasValueSatisfying(film ->
+                        assertThat(film).hasFieldOrPropertyWithValue("id", 1)
+                                .hasFieldOrPropertyWithValue("name", filmToUpdate.getName())
+                                .hasFieldOrPropertyWithValue("description", filmToUpdate.getDescription())
+                                .hasFieldOrPropertyWithValue("releaseDate", filmToUpdate.getReleaseDate())
+                                .hasFieldOrPropertyWithValue("duration", filmToUpdate.getDuration())
+                );
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void removeFilm() {
+        filmStorage.createFilm(filmFirst);
+        Film toRemove = filmStorage.findById(1);
+        filmStorage.removeFilm(toRemove);
+
+        try {
+            filmStorage.findById(toRemove.getId());
+        } catch (Exception e) {
+            assertEquals("Фильм с ID 1 не найден.", e.getMessage());
+        }
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void findAll() {
+        filmStorage.createFilm(filmFirst);
+        filmStorage.createFilm(filmSecond);
+
+        List<Film> expectedFilms = List.of(filmStorage.findById(1), filmStorage.findById(2));
+        assertEquals(expectedFilms, filmStorage.findAll());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
-    void findById() {
+    void testContainsFilm() {
+        Film expected = filmStorage.createFilm(filmFirst);
+        assertTrue(filmStorage.containsFilm(expected.getId()));
     }
 }
