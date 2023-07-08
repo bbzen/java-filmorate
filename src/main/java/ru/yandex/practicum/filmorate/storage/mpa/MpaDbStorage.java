@@ -8,7 +8,9 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -31,7 +33,10 @@ public class MpaDbStorage implements MpaStorage {
 
     @Override
     public List<Mpa> findAllMpa() {
-        return jdbcTemplate.query("select * from mpa", mpaRowMapper());
+        return jdbcTemplate.query("select * from mpa", mpaRowMapper())
+                .stream()
+                .sorted(Comparator.comparingInt(Mpa::getId))
+                .collect(Collectors.toList());
     }
 
     private RowMapper<Mpa> mpaRowMapper() {

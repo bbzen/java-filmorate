@@ -1,12 +1,2 @@
-insert into mpa(mpa_name) values ('G');
-insert into mpa(mpa_name) values ('PG');
-insert into mpa(mpa_name) values ('PG-13');
-insert into mpa(mpa_name) values ('R');
-insert into mpa(mpa_name) values ('NC-17');
-
-insert into genres(genre_name) values ('Комедия');
-insert into genres(genre_name) values ('Драма');
-insert into genres(genre_name) values ('Мультфильм');
-insert into genres(genre_name) values ('Триллер');
-insert into genres(genre_name) values ('Документальный');
-insert into genres(genre_name) values ('Боевик');
+merge INTO mpa key(mpa_id) values (1, 'G'), (2, 'PG'), (3, 'PG-13'), (4, 'R'), (5, 'NC-17');
+merge INTO genres key(genre_id) values (1, 'Комедия'), (2, 'Драма'), (3, 'Мультфильм'), (4, 'Триллер'), (5, 'Документальный'), (6, 'Боевик');
