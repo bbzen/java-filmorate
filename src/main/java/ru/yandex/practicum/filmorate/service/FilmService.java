@@ -72,13 +72,14 @@ public class FilmService {
         return film;
     }
 
-    public void removeLike(int filmId, int userId) {
+    public Film removeLike(int filmId, int userId) {
         Film currentFilm = filmStorage.findById(filmId);
         if (!(currentFilm.containsLike(userId))) {
             throw new UserNotFoundException("Указанный пользователь не лайкал указанный фильм.");
         }
         currentFilm.removeLike(userId);
         filmStorage.updateFilm(currentFilm);
+        return currentFilm;
     }
 
     private void checkName(Film film) {

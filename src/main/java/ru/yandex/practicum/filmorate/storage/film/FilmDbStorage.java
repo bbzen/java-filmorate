@@ -141,6 +141,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private void updateLikes(Film film) {
+        jdbcTemplate.update("delete from likes where film_id = ?", film.getId());
         SimpleJdbcInsert simpleLikesInsert = new SimpleJdbcInsert(Objects.requireNonNull(jdbcTemplate.getDataSource()))
                 .withTableName("likes");
         if (!film.getLikes().isEmpty()) {
