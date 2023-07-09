@@ -21,15 +21,17 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void createUser(User user) {
+    public User createUser(User user) {
         user.setId(++id);
         users.put(user.getId(), user);
+        return user;
     }
 
     @Override
-    public void updateUser(User user) {
+    public User updateUser(User user) {
         containsUser(user.getId());
         users.put(user.getId(), user);
+        return user;
     }
 
     @Override
@@ -39,7 +41,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User getUserById(int id) {
+    public User findUserById(int id) {
         containsUser(id);
         return users.get(id);
     }
@@ -47,6 +49,11 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public List<User> findAll() {
         return new ArrayList<>(users.values());
+    }
+
+    @Override
+    public void removeFS(int removerId, int acceptorId) {
+
     }
 
     public boolean containsUser(int id) {
