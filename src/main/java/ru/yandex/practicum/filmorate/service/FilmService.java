@@ -28,7 +28,10 @@ public class FilmService {
     }
 
     public List<Film> findAll() {
-        return filmStorage.findAll();
+        return filmStorage.findAll()
+                .stream()
+                .sorted(Comparator.comparingInt(Film::getId))
+                .collect(Collectors.toList());
     }
 
     public Film findById(int id) {
@@ -52,9 +55,9 @@ public class FilmService {
         filmStorage.createFilm(film);
     }
 
-    public void updateFilm(Film film) {
+    public Film updateFilm(Film film) {
         doAllChecks(film);
-        filmStorage.updateFilm(film);
+        return filmStorage.updateFilm(film);
     }
 
     public void removeFilm(Film film) {
@@ -64,15 +67,19 @@ public class FilmService {
     public Film addLike(int id, int userId) {
         Film film = filmStorage.findById(id);
         User user = userService.findById(userId);
-        return film.addLike(user);
+        film.addLike(user);
+        filmStorage.updateFilm(film);
+        return film;
     }
 
-    public void removeLike(int filmId, int userId) {
+    public Film removeLike(int filmId, int userId) {
         Film currentFilm = filmStorage.findById(filmId);
         if (!(currentFilm.containsLike(userId))) {
             throw new UserNotFoundException("Указанный пользователь не лайкал указанный фильм.");
         }
         currentFilm.removeLike(userId);
+        filmStorage.updateFilm(currentFilm);
+        return currentFilm;
     }
 
     private void checkName(Film film) {

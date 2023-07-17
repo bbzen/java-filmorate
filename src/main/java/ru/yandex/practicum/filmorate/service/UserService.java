@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,10 +23,10 @@ public class UserService {
         this.userStorage = userStorage;
     }
 
-    public void createUser(User user) {
+    public User createUser(User user) {
         runAllChecks(user);
         checkName(user);
-        userStorage.createUser(user);
+        return userStorage.createUser(user);
     }
 
     public void updateUser(User user) {
@@ -34,51 +35,57 @@ public class UserService {
         userStorage.updateUser(user);
     }
 
-    public List<User> findAll() {
+    public Collection<User> findAll() {
         return userStorage.findAll();
     }
 
     public User findById(int id) {
-        return userStorage.getUserById(id);
+        return userStorage.findUserById(id);
     }
 
     public List<User> findUserFriends(int id) {
-        return userStorage.getUserById(id)
+        return userStorage.findUserById(id)
                 .getFriends().stream()
-                .map(userStorage::getUserById)
+                .map(userStorage::findUserById)
                 .collect(Collectors.toList());
     }
 
     public List<User> findMutualFriends(int id, int otherId) {
-        User userA = userStorage.getUserById(id);
-        User userB = userStorage.getUserById(otherId);
+        Collection<Integer> userOneFriends = userStorage.findUserById(id).getFriends();
+        Collection<Integer> userTwoFriends = userStorage.findUserById(otherId).getFriends();
         List<User> result = new ArrayList<>();
 
-        for (Integer friendId : userA.getFriends()) {
-            User temp = userStorage.getUserById(friendId);
-            if (userB.containsFriend(temp)) {
-                result.add(temp);
+        for (Integer friendId : userOneFriends) {
+            if (userTwoFriends.contains(friendId)) {
+                result.add(userStorage.findUserById(friendId));
             }
         }
         return result;
     }
 
-    public void addToFriends(int adder, int friendId) {
-        if (userStorage.containsUser(adder) && userStorage.containsUser(friendId)) {
-            userStorage.getUserById(adder).addFriend(friendId);
-            userStorage.getUserById(friendId).addFriend(adder);
-            log.debug("Пользователи {} {} успешно добавлены в друзья.", adder, friendId);
+    public void addToFriends(int acceptorId, int requesterId) {
+        User acceptor = userStorage.findUserById(acceptorId);
+        User requester = userStorage.findUserById(requesterId);
+        if (userStorage.containsUser(acceptorId) && userStorage.containsUser(requesterId)) {
+            acceptor.takeFsRequest(requesterId);
+            requester.askFS(acceptorId);
+            userStorage.updateUser(acceptor);
+            userStorage.updateUser(requester);
+            log.debug("Пользователь {} запросил дружбу у пользователя {}.", requesterId, acceptorId);
+            log.debug("Пользователь {} добавил в друзья пользователя {}.", requesterId, acceptorId);
         }
     }
 
-    public void removeFromFriends(int id, int otherId) {
-        User userA = userStorage.getUserById(id);
-        User userB = userStorage.getUserById(otherId);
-
-        if (userStorage.containsUser(userA.getId()) && userStorage.containsUser(userB.getId())) {
-            userA.removeFriend(userB);
-            userB.removeFriend(userA);
-            log.debug("Пользователи {} {} успешно удалены из друзей.", userA.getEmail(), userB.getEmail());
+    public void removeFromFriends(int removerId, int toRemoveId) {
+        User remover = userStorage.findUserById(removerId);
+        User toRemove = userStorage.findUserById(toRemoveId);
+        if (remover.hasFriend(toRemoveId) && toRemove.hasAcceptation(removerId)) {
+            remover.removeFriend(toRemoveId);
+            toRemove.removeAcceptation(removerId);
+            userStorage.removeFS(removerId, toRemoveId);
+            userStorage.updateUser(remover);
+            userStorage.updateUser(toRemove);
+            log.debug("Пользователь {} удалил из друзей пользователя {}.", remover.getLogin(), toRemove.getLogin());
         }
     }
 
