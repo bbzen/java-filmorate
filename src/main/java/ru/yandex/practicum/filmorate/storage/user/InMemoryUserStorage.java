@@ -35,9 +35,9 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void removeUser(User user) {
-        containsUser(user.getId());
-        users.remove(user.getId());
+    public void removeUser(int userId) {
+        containsUser(userId);
+        users.remove(userId);
     }
 
     @Override
@@ -53,8 +53,8 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public void removeFS(int removerId, int acceptorId) {
-
     }
+
 
     public boolean containsUser(int id) {
         if (!users.containsKey(id)) {

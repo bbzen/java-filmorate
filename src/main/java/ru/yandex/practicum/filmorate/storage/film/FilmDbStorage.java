@@ -56,10 +56,10 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public void removeFilm(Film film) {
+    public void removeFilm(int filmId) {
         String sql = "delete from films where film_id = ?";
-        jdbcTemplate.update(sql, film.getId());
-        log.debug("Фильм " + film.getId() + " удален.");
+        jdbcTemplate.update(sql, filmId);
+        log.debug("Фильм " + filmId + " удален.");
     }
 
     @Override
