@@ -60,8 +60,8 @@ public class FilmService {
         return filmStorage.updateFilm(film);
     }
 
-    public void removeFilm(Film film) {
-        filmStorage.removeFilm(film);
+    public void removeFilm(int filmId) {
+        filmStorage.removeFilm(filmId);
     }
 
     public Film addLike(int id, int userId) {

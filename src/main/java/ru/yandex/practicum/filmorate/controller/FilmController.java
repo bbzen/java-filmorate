@@ -30,9 +30,9 @@ public class FilmController {
         return filmService.updateFilm(film);
     }
 
-    @DeleteMapping
-    public void removeFilm(@RequestBody Film film) {
-        filmService.removeFilm(film);
+    @PutMapping("/{id}/like/{userId}")
+    public Film addLike(@PathVariable int id, @PathVariable int userId) {
+        return filmService.addLike(id, userId);
     }
 
     @GetMapping
@@ -45,9 +45,9 @@ public class FilmController {
         return filmService.findById(id);
     }
 
-    @PutMapping("/{id}/like/{userId}")
-    public Film addLike(@PathVariable int id, @PathVariable int userId) {
-        return filmService.addLike(id, userId);
+    @GetMapping("/popular")
+    public List<Film> getPopular(@RequestParam(required = false) Integer count) {
+        return filmService.findTopFilms(count);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
@@ -55,9 +55,9 @@ public class FilmController {
         return filmService.removeLike(id, userId);
     }
 
-    @GetMapping("/popular")
-    public List<Film> getPopular(@RequestParam(required = false) Integer count) {
-        return filmService.findTopFilms(count);
+    @DeleteMapping("/{id}")
+    public void removeFilm(@PathVariable int id) {
+        filmService.removeFilm(id);
     }
 
 }
