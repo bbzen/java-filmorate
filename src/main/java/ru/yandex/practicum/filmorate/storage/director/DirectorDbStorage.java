@@ -77,10 +77,7 @@ public class DirectorDbStorage implements DirectorStorage {
                 .stream()
                 .sorted((d1, d2) -> String.CASE_INSENSITIVE_ORDER.compare(d1.getName(), d2.getName()))
                 .collect(Collectors.toList());
-        if (!result.isEmpty()) {
-            return result;
-        }
-        throw new DirectorNotFoundException("База режиссеров пуста.");
+        return result;
     }
 
     private RowMapper<Director> directorRowMapper() {

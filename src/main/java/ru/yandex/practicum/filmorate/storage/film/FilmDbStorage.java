@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -33,14 +34,15 @@ public class FilmDbStorage implements FilmStorage {
         SimpleJdbcInsert simpleFilmInsert = new SimpleJdbcInsert(Objects.requireNonNull(jdbcTemplate.getDataSource()))
                 .withTableName("films")
                 .usingGeneratedKeyColumns("film_id");
-            Map<String, Object> params = Map.of("film_name", film.getName(),
-                    "film_description", film.getDescription(),
-                    "release_date", film.getReleaseDate(),
-                    "film_duration", film.getDuration(),
-                    "film_mpa", film.getMpaId());
-            Number id = simpleFilmInsert.executeAndReturnKey(params);
-            film.setId(id.intValue());
-            updateFilmGenre(film);
+        Map<String, Object> params = Map.of("film_name", film.getName(),
+                "film_description", film.getDescription(),
+                "release_date", film.getReleaseDate(),
+                "film_duration", film.getDuration(),
+                "film_mpa", film.getMpaId());
+        Number id = simpleFilmInsert.executeAndReturnKey(params);
+        film.setId(id.intValue());
+        updateFilmGenre(film);
+        updateFilmDirectors(film);
         log.debug("Фильм " + film.getName() + " добавлен.");
         return findById(film.getId());
     }
@@ -48,10 +50,11 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film updateFilm(Film film) {
         containsFilm(film.getId());
-            String sqlFilm = "update films set film_name = ?, film_description = ?, release_date = ?, film_duration = ?, film_mpa = ? where film_id = ?";
-            jdbcTemplate.update(sqlFilm, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpaId(), film.getId());
-            updateLikes(film);
-            updateFilmGenre(film);
+        String sqlFilm = "update films set film_name = ?, film_description = ?, release_date = ?, film_duration = ?, film_mpa = ? where film_id = ?";
+        jdbcTemplate.update(sqlFilm, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpaId(), film.getId());
+        updateLikes(film);
+        updateFilmGenre(film);
+        updateFilmDirectors(film);
         return findById(film.getId());
     }
 
@@ -70,6 +73,7 @@ public class FilmDbStorage implements FilmStorage {
             applyMpaFromDb(film);
             applyLikesFromDb(film);
             applyGenresFromDb(film);
+            applyDirectorsFromDb(film);
         }
         return films;
     }
@@ -80,6 +84,7 @@ public class FilmDbStorage implements FilmStorage {
         applyMpaFromDb(film);
         applyLikesFromDb(film);
         applyGenresFromDb(film);
+        applyDirectorsFromDb(film);
         return film;
     }
 
@@ -116,6 +121,12 @@ public class FilmDbStorage implements FilmStorage {
         return film;
     }
 
+    private Film applyDirectorsFromDb(Film film) {
+        List<Director> directors = jdbcTemplate.query("select d.DIR_ID, d.DIR_NAME FROM FILM_DIRECTORS fd join DIRECTORS d on fd.DIR_ID = d.DIR_ID where film_id = ?", directorRowMapper(), film.getId());
+        film.applyDirectorsData(directors);
+        return film;
+    }
+
     private RowMapper<Film> filmRowMapper() {
         return (rs, rowNum) -> new Film(
                 rs.getInt("film_id"),
@@ -137,6 +148,14 @@ public class FilmDbStorage implements FilmStorage {
         return (rs, rowNum) -> new Genre(
                 rs.getString("genre_name"),
                 rs.getInt("genre_id")
+        );
+    }
+
+    private RowMapper<Director> directorRowMapper() {
+        return (rs, rowNum) -> new Director(
+                rs.getInt("dir_id"),
+                rs.getString("dir_name")
+
         );
     }
 
@@ -163,6 +182,22 @@ public class FilmDbStorage implements FilmStorage {
         if (!film.getGenres().isEmpty()) {
             for (Genre genre : film.getGenres()) {
                 Map<String, Integer> params = Map.of("film_id", film.getId(), "genre_id", genre.getId());
+                try {
+                    simpleGenreInsert.execute(params);
+                } catch (DuplicateKeyException e) {
+                    log.debug("Повторяющееся значение пары ID пользователя и жанра не были добавлены.");
+                }
+            }
+        }
+    }
+
+    private void updateFilmDirectors(Film film) {
+        jdbcTemplate.update("delete from film_directors where film_id = ?", film.getId());
+        SimpleJdbcInsert simpleGenreInsert = new SimpleJdbcInsert(Objects.requireNonNull(jdbcTemplate.getDataSource()))
+                .withTableName("film_directors");
+        if (!film.getDirectors().isEmpty()) {
+            for (Director director : film.getDirectors()) {
+                Map<String, Integer> params = Map.of("film_id", film.getId(), "dir_id", director.getId());
                 try {
                     simpleGenreInsert.execute(params);
                 } catch (DuplicateKeyException e) {

@@ -1,10 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.service.DirectorService;
 
@@ -26,7 +23,22 @@ public class DirectorController {
     }
 
     @GetMapping
-    public List<Director> findAllDirectors() {
+    public List<Director> findAll() {
         return directorService.findAllDirectors();
+    }
+
+    @PostMapping
+    public Director createDirector(@RequestBody Director director) {
+        return directorService.createDirector(director);
+    }
+
+    @PutMapping
+    public Director updateDirector(@RequestBody Director director) {
+        return directorService.updateDirector(director);
+    }
+
+    @DeleteMapping("/{id}")
+    public void removeDirector(@PathVariable int id) {
+        directorService.removeDirector(id);
     }
 }

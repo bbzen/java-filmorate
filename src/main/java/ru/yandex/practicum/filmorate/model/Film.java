@@ -82,6 +82,10 @@ public class Film {
         genres.addAll(genresIncome);
     }
 
+    public void applyDirectorsData(List<Director> directorsIncome) {
+        directors.addAll(directorsIncome);
+    }
+
     public Integer getMpaId() {
         if (mpa != null) {
             return mpa.getId();

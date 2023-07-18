@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -19,12 +20,14 @@ import java.util.stream.Collectors;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserService userService;
+    private final DirectorService directorService;
     private static final int MIN_FILMS_COUNT = 10;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserService userService) {
+    public FilmService(FilmStorage filmStorage, UserService userService, DirectorService directorService) {
         this.filmStorage = filmStorage;
         this.userService = userService;
+        this.directorService = directorService;
     }
 
     public List<Film> findAll() {
@@ -116,5 +119,14 @@ public class FilmService {
         checkDescription(film);
         checkDate(film);
         checkDuration(film);
+        checkAddDirectors(film);
+    }
+
+    private void checkAddDirectors(Film film) {
+        for (Director director : film.getDirectors()) {
+            if (!directorService.containsDirector(director.getId())) {
+                directorService.createDirector(director);
+            }
+        }
     }
 }
