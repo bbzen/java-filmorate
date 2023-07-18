@@ -23,6 +23,7 @@ public class Film {
     private Mpa mpa;
     private List<Genre> genres = new ArrayList<>();
     private final Set<Integer> likes = new HashSet<>();
+    private final List<Director> directors = new ArrayList<>();
 
     public Film(int id, String name, String description, LocalDate releaseDate, long duration, Mpa mpa) {
         this.id = id;
