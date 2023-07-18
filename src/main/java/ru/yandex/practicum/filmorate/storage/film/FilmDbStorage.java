@@ -96,7 +96,8 @@ public class FilmDbStorage implements FilmStorage {
                 "join likes l on l.film_id = f.film_id " +
                 "where l.user_id in (?, ?) " +
                 "group by f.film_id " +
-                "having count(distinct l.user_id) = 2";
+                "having count(distinct l.user_id) = 2 " +
+                "order by (select count(film_id) from likes where film_id = f.film_id) desc";
         List<Film> films = jdbcTemplate.query(sql, filmRowMapper(), userId, friendId);
         for (Film film : films) {
             applyMpaFromDb(film);
