@@ -5,7 +5,15 @@ import ru.yandex.practicum.filmorate.model.Director;
 import java.util.List;
 
 public interface DirectorStorage {
+    List<Director> findAllDirectors();
+
     Director findById(int id);
 
-    List<Director> findAllDirectors();
+    Director createDirector(Director director);
+
+    Director updateDirector(Director director);
+
+    void removeDirector(int dirId);
+
+    boolean containsDirector(int dirId);
 }
