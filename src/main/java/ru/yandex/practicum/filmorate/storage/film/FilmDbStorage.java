@@ -89,7 +89,7 @@ public class FilmDbStorage implements FilmStorage {
         return true;
     }
     @Override
-    public List<Film> getFilmsLikedUsers(int userId) {
+    public List<Film> getRecommendations(int userId) {
         String sql = "select f.* from likes l " +
                 "join films f on f.film_id = l.film_id " +
                 "where l.user_id = (select l2.user_id from likes l1 join likes l2 ON l1.film_id = l2.film_id " +
