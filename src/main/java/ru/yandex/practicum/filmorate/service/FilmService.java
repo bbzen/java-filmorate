@@ -38,10 +38,8 @@ public class FilmService {
     }
 
     public List<Film> findAllByDirector(int dirId, String sort) {
-        List<Film> result = filmStorage.findAll()
-                .stream()
-                .filter(f -> f.getDirectors().contains(directorService.findById(dirId)))
-                .collect(Collectors.toList());
+        directorService.containsDirector(dirId);
+        List<Film> result = filmStorage.findAllByDirectorId(dirId);
 
         if (sort.equalsIgnoreCase("year")) {
             return result.stream().sorted(Comparator.comparingLong(Film::getReleaseDateEpochDays))
