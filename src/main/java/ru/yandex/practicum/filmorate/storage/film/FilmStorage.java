@@ -9,7 +9,7 @@ public interface FilmStorage {
 
     Film updateFilm(Film film);
 
-    void removeFilm(Film film);
+    void removeFilm(int filmId);
 
     List<Film> findAll();
 

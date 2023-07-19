@@ -89,6 +89,11 @@ public class UserService {
         }
     }
 
+    public void removeUser(int userId) {
+        userStorage.containsUser(userId);
+        userStorage.removeUser(userId);
+    }
+
     private void checkName(User user) {
         String currentName = user.getName();
         if (currentName == null || currentName.isBlank()) {
