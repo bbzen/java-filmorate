@@ -101,6 +101,12 @@ public class FilmService {
         return currentFilm;
     }
 
+    public List<Film> getCommon(Integer userId, Integer friendId) {
+        userService.hasUser(userId);
+        userService.hasUser(friendId);
+        return filmStorage.getCommonFilmList(userId, friendId);
+    }
+
     private void checkName(Film film) {
         if (film.getName().isBlank() || film.getName() == null) {
             log.debug("Получено пустое название фильма - {}.", film.getName());

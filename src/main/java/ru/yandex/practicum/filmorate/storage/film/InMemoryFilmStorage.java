@@ -59,6 +59,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         films.remove(filmId);
     }
 
+    @Override
+    public List<Film> getCommonFilmList(int userId, int friendId) {
+        return null;
+    }
+
     private void isFilmPresent(int id) {
         if (!films.containsKey(id)) {
             log.debug("Данный фильм отсутствует в базе данных.");
