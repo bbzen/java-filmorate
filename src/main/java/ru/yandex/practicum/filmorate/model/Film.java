@@ -60,6 +60,10 @@ public class Film {
         return likes.size();
     }
 
+    public long getReleaseDateEpochDays() {
+        return releaseDate.toEpochDay();
+    }
+
     public boolean containsLike(int userId) {
         return likes.contains(userId);
     }

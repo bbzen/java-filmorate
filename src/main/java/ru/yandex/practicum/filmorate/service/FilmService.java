@@ -37,6 +37,23 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
+    public List<Film> findAllByDirector(int dirId, String sort) {
+        List<Film> result = filmStorage.findAll()
+                .stream()
+                .filter(f -> f.getDirectors().contains(directorService.findById(dirId)))
+                .collect(Collectors.toList());
+
+        if (sort.equalsIgnoreCase("year")) {
+            return result.stream().sorted(Comparator.comparingLong(Film::getReleaseDateEpochDays))
+                    .collect(Collectors.toList());
+        }
+        if (sort.equalsIgnoreCase("likes")) {
+            return result.stream().sorted(Comparator.comparingLong(Film::getLikesAmount))
+                    .collect(Collectors.toList());
+        }
+        throw new RuntimeException("Заданный способ сортировки не найден, возможные варианты - year, likes");
+    }
+
     public Film findById(int id) {
         return filmStorage.findById(id);
     }
