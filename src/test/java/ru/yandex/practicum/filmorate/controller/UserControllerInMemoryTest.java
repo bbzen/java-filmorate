@@ -15,7 +15,7 @@ class UserControllerInMemoryTest {
 
     @BeforeEach
     void setUp() {
-        userController = new UserController(new UserService(new InMemoryUserStorage()));
+        userController = new UserController(new UserService(new InMemoryUserStorage(), filmStorage));
     }
 
     @Test

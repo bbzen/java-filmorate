@@ -20,7 +20,7 @@ class FilmControllerInMemoryTest {
 
     @BeforeEach
     void setUp() {
-        userService = new UserService(new InMemoryUserStorage());
+        userService = new UserService(new InMemoryUserStorage(), filmStorage);
         filmService = new FilmService(new InMemoryFilmStorage(), userService);
         filmController = new FilmController(filmService);
     }
