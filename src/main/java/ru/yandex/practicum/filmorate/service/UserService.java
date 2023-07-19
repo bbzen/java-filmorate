@@ -43,6 +43,10 @@ public class UserService {
         return userStorage.findUserById(id);
     }
 
+    public Boolean hasUser(int userId) {
+        return userStorage.containsUser(userId);
+    }
+
     public List<User> findUserFriends(int id) {
         return userStorage.findUserById(id)
                 .getFriends().stream()

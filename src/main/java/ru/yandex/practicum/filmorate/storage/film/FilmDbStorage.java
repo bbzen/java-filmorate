@@ -33,14 +33,14 @@ public class FilmDbStorage implements FilmStorage {
         SimpleJdbcInsert simpleFilmInsert = new SimpleJdbcInsert(Objects.requireNonNull(jdbcTemplate.getDataSource()))
                 .withTableName("films")
                 .usingGeneratedKeyColumns("film_id");
-            Map<String, Object> params = Map.of("film_name", film.getName(),
-                    "film_description", film.getDescription(),
-                    "release_date", film.getReleaseDate(),
-                    "film_duration", film.getDuration(),
-                    "film_mpa", film.getMpaId());
-            Number id = simpleFilmInsert.executeAndReturnKey(params);
-            film.setId(id.intValue());
-            updateFilmGenre(film);
+        Map<String, Object> params = Map.of("film_name", film.getName(),
+                "film_description", film.getDescription(),
+                "release_date", film.getReleaseDate(),
+                "film_duration", film.getDuration(),
+                "film_mpa", film.getMpaId());
+        Number id = simpleFilmInsert.executeAndReturnKey(params);
+        film.setId(id.intValue());
+        updateFilmGenre(film);
         log.debug("Фильм " + film.getName() + " добавлен.");
         return findById(film.getId());
     }
@@ -48,10 +48,10 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film updateFilm(Film film) {
         containsFilm(film.getId());
-            String sqlFilm = "update films set film_name = ?, film_description = ?, release_date = ?, film_duration = ?, film_mpa = ? where film_id = ?";
-            jdbcTemplate.update(sqlFilm, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpaId(), film.getId());
-            updateLikes(film);
-            updateFilmGenre(film);
+        String sqlFilm = "update films set film_name = ?, film_description = ?, release_date = ?, film_duration = ?, film_mpa = ? where film_id = ?";
+        jdbcTemplate.update(sqlFilm, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpaId(), film.getId());
+        updateLikes(film);
+        updateFilmGenre(film);
         return findById(film.getId());
     }
 
@@ -87,6 +87,24 @@ public class FilmDbStorage implements FilmStorage {
     public boolean containsFilm(int id) {
         getFilmListById(id);
         return true;
+    }
+
+    @Override
+    public List<Film> getCommonFilmList(int userId, int friendId) {
+        String sql = "select f.* " +
+                "from films f " +
+                "join likes l on l.film_id = f.film_id " +
+                "where l.user_id in (?, ?) " +
+                "group by f.film_id " +
+                "having count(distinct l.user_id) = 2 " +
+                "order by (select count(film_id) from likes where film_id = f.film_id) desc";
+        List<Film> films = jdbcTemplate.query(sql, filmRowMapper(), userId, friendId);
+        for (Film film : films) {
+            applyMpaFromDb(film);
+            applyLikesFromDb(film);
+            applyGenresFromDb(film);
+        }
+        return films;
     }
 
     private List<Film> getFilmListById(int id) {
