@@ -27,7 +27,7 @@ public class UserService {
     }
 
     public List<Film> getRecommendation(int userId) {
-        return filmStorage.getFilmsLikedUsers(userId);
+        return filmStorage.getRecommendations(userId);
     }
 
     public User createUser(User user) {
