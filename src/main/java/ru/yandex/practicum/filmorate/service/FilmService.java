@@ -56,6 +56,7 @@ public class FilmService {
         return filmStorage.findById(id);
     }
 
+    //todo исправить на запрос с лимит
     public List<Film> findTopFilms(Integer count) {
         int amount = MIN_FILMS_COUNT;
         if (count != null) {
@@ -66,6 +67,14 @@ public class FilmService {
                 .sorted(Comparator.comparingInt(Film::getLikesAmount).reversed())
                 .limit(amount)
                 .collect(Collectors.toList());
+    }
+
+    public List<Film> findMostPopular(Integer limit, Integer genreId, Integer releaseYear) {
+        int amount = MIN_FILMS_COUNT;
+        if (limit != null) {
+            amount = limit;
+        }
+        return filmStorage.findMostPopular(amount, genreId, releaseYear);
     }
 
     public void createFilm(Film film) {
