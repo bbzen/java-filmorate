@@ -80,19 +80,6 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "select f.* FROM FILM_DIRECTORS fd JOIN films f ON f.FILM_ID = fd.FILM_ID WHERE DIR_ID = ?";
         List<Film> films = jdbcTemplate.query(sql, filmRowMapper(), dirId);
         for (Film film : films) {
-            applyMpaFromDb(film);
-            applyLikesFromDb(film);
-            applyGenresFromDb(film);
-            applyDirectorsFromDb(film);
-        }
-        return films;
-    }
-
-    @Override
-    public List<Film> findAllByDirectorId(int dirId) {
-        String sql = "select f.* FROM FILM_DIRECTORS fd JOIN films f ON f.FILM_ID = fd.FILM_ID WHERE DIR_ID = ?";
-        List<Film> films = jdbcTemplate.query(sql, filmRowMapper(), dirId);
-        for (Film film : films) {
         applyAllDataFromDb(film);
         }
         return films;
