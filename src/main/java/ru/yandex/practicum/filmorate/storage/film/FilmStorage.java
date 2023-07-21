@@ -17,9 +17,7 @@ public interface FilmStorage {
 
     boolean containsFilm(int id);
 
-
     List<Film> getRecommendations(int userId);
-
 
     List<Film> getCommonFilmList(int userId, int friendId);
 

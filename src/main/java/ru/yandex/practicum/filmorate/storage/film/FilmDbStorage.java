@@ -88,6 +88,7 @@ public class FilmDbStorage implements FilmStorage {
         getFilmListById(id);
         return true;
     }
+
     @Override
     public List<Film> getRecommendations(int userId) {
         String sql = "select f.* from likes l " +
@@ -100,7 +101,8 @@ public class FilmDbStorage implements FilmStorage {
             applyMpaFromDb(film);
             applyLikesFromDb(film);
             applyGenresFromDb(film);
-        }return films;
+        }
+        return films;
     }
 
     @Override
