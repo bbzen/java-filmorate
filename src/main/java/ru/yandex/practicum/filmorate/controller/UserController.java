@@ -8,7 +8,9 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @RestController
@@ -66,7 +68,7 @@ public class UserController {
 
     @GetMapping("/{id}/recommendations")
     public List<Film> getRecommendations(@PathVariable int id) {
-        return userService.getRecommendation(id);
+        return userService.getRecommendations(id);
     }
 
     @DeleteMapping("/{id}")

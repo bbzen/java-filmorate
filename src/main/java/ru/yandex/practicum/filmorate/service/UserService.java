@@ -26,7 +26,7 @@ public class UserService {
         this.filmStorage = filmStorage;
     }
 
-    public List<Film> getRecommendation(int userId) {
+    public List<Film> getRecommendations(int userId) {
         return filmStorage.getRecommendations(userId);
     }
 
