@@ -87,7 +87,7 @@ class UserDbStorageTest {
     void testRemoveUser() {
         userStorage.createUser(userFirst);
         User toRemove = userStorage.findUserById(1);
-        userStorage.removeUser(toRemove);
+        userStorage.removeUser(toRemove.getId());
 
         try {
             userStorage.findUserById(1);

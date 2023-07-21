@@ -9,7 +9,7 @@ public interface FilmStorage {
 
     Film updateFilm(Film film);
 
-    void removeFilm(Film film);
+    void removeFilm(int filmId);
 
     List<Film> findAll();
 
@@ -17,6 +17,10 @@ public interface FilmStorage {
 
     boolean containsFilm(int id);
 
+
     List<Film> getRecommendations(int userId);
+
+
+    List<Film> getCommonFilmList(int userId, int friendId);
 
 }

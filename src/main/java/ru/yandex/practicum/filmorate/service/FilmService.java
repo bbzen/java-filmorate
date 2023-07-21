@@ -60,8 +60,9 @@ public class FilmService {
         return filmStorage.updateFilm(film);
     }
 
-    public void removeFilm(Film film) {
-        filmStorage.removeFilm(film);
+    public void removeFilm(int filmId) {
+        filmStorage.containsFilm(filmId);
+        filmStorage.removeFilm(filmId);
     }
 
     public Film addLike(int id, int userId) {
@@ -80,6 +81,12 @@ public class FilmService {
         currentFilm.removeLike(userId);
         filmStorage.updateFilm(currentFilm);
         return currentFilm;
+    }
+
+    public List<Film> getCommon(Integer userId, Integer friendId) {
+        userService.hasUser(userId);
+        userService.hasUser(friendId);
+        return filmStorage.getCommonFilmList(userId, friendId);
     }
 
     private void checkName(Film film) {
