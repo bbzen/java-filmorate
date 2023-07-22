@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.service.DirectorService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
@@ -17,11 +18,12 @@ class FilmControllerInMemoryTest {
     private FilmController filmController;
     private FilmService filmService;
     private UserService userService;
+    private DirectorService directorService;
 
     @BeforeEach
     void setUp() {
         userService = new UserService(new InMemoryUserStorage());
-        filmService = new FilmService(new InMemoryFilmStorage(), userService);
+        filmService = new FilmService(new InMemoryFilmStorage(), userService, directorService);
         filmController = new FilmController(filmService);
     }
 

@@ -13,6 +13,8 @@ public interface FilmStorage {
 
     List<Film> findAll();
 
+    List<Film> findAllByDirectorId(int dirId);
+
     Film findById(int id);
 
     boolean containsFilm(int id);

@@ -23,6 +23,7 @@ public class Film {
     private Mpa mpa;
     private List<Genre> genres = new ArrayList<>();
     private final Set<Integer> likes = new HashSet<>();
+    private final List<Director> directors = new ArrayList<>();
 
     public Film(int id, String name, String description, LocalDate releaseDate, long duration, Mpa mpa) {
         this.id = id;
@@ -59,6 +60,10 @@ public class Film {
         return likes.size();
     }
 
+    public long getReleaseDateEpochDays() {
+        return releaseDate.toEpochDay();
+    }
+
     public boolean containsLike(int userId) {
         return likes.contains(userId);
     }
@@ -79,6 +84,10 @@ public class Film {
 
     public void applyGenresData(List<Genre> genresIncome) {
         genres.addAll(genresIncome);
+    }
+
+    public void applyDirectorsData(List<Director> directorsIncome) {
+        directors.addAll(directorsIncome);
     }
 
     public Integer getMpaId() {
