@@ -103,6 +103,10 @@ public class FilmService {
         return filmStorage.getCommonFilmList(userId, friendId);
     }
 
+    public List<Film> searchFilm(String by, String query) {
+        return filmStorage.findByDirTitle(by, query);
+    }
+
     private void checkName(Film film) {
         if (film.getName().isBlank() || film.getName() == null) {
             log.debug("Получено пустое название фильма - {}.", film.getName());

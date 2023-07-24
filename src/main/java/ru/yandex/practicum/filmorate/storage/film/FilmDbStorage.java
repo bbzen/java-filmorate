@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -80,7 +81,7 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "select f.* FROM FILM_DIRECTORS fd JOIN films f ON f.FILM_ID = fd.FILM_ID WHERE DIR_ID = ?";
         List<Film> films = jdbcTemplate.query(sql, filmRowMapper(), dirId);
         for (Film film : films) {
-        applyAllDataFromDb(film);
+            applyAllDataFromDb(film);
         }
         return films;
     }
@@ -166,6 +167,31 @@ public class FilmDbStorage implements FilmStorage {
         for (Film film : films) {
             applyAllDataFromDb(film);
         }
+        return films;
+    }
+
+    @Override
+    public List<Film> findByDirTitle(String by, String query) {
+        StringBuilder sql = new StringBuilder("select f.* " +
+                "from films f " +
+                "left join film_directors fd on f.film_id = fd.film_id " +
+                "left join directors d on fd.dir_id = d.dir_id ");
+        String arg = "%" + query.toLowerCase() + "%";
+
+        if (by.equals("title"))
+            sql.append("where lower(f.film_name) like ? ");
+        else if (by.equals("director"))
+            sql.append("where lower(d.dir_name) like ? ");
+        else if (by.equals("director,title") || by.equals("title,director"))
+            sql.append("where lower(d.dir_name) like $1 or lower(f.film_name) like $1 ");
+        else
+            throw new ValidationException("Invalid value: '" + by + "' for parameter 'by'");
+
+        sql.append("group by f.film_id " +
+                "order by (select count(film_id) from likes where film_id = f.film_id) desc");
+
+        List<Film> films = jdbcTemplate.query(sql.toString(), filmRowMapper(), arg);
+        films.forEach(this::applyAllDataFromDb);
         return films;
     }
 
