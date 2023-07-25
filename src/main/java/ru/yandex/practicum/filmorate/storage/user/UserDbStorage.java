@@ -9,8 +9,11 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -121,6 +124,12 @@ public class UserDbStorage implements UserStorage {
         return user;
     }
 
+    @Override
+    public List<Event> getUserEvent(Integer id) {
+        String sqlQuery = "SELECT * FROM feeds WHERE userId = ?";
+        return jdbcTemplate.query(sqlQuery, this::makeEvent, id);
+    }
+
     private RowMapper<User> userRowMapper() {
         return (rs, rowNum) -> new User(
                 rs.getInt("user_id"),
@@ -129,5 +138,16 @@ public class UserDbStorage implements UserStorage {
                 rs.getString("user_name"),
                 rs.getDate("birthday").toLocalDate()
         );
+    }
+
+    private Event makeEvent(ResultSet rs, int rowNum) throws SQLException {
+        return Event.builder()
+                .timestamp(rs.getLong("timestamp"))
+                .userId(rs.getLong("userId"))
+                .eventType(rs.getString("eventType"))
+                .operation(rs.getString("operation"))
+                .eventId(rs.getLong("eventId"))
+                .entityId(rs.getLong("entityId"))
+                .build();
     }
 }

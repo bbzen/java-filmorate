@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.event.EventStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.time.LocalDate;
@@ -21,13 +22,15 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final UserService userService;
     private final DirectorService directorService;
+    private final EventStorage eventStorage;
     private static final int MIN_FILMS_COUNT = 10;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserService userService, DirectorService directorService) {
+    public FilmService(FilmStorage filmStorage, UserService userService, DirectorService directorService, EventStorage eventStorage) {
         this.filmStorage = filmStorage;
         this.userService = userService;
         this.directorService = directorService;
+        this.eventStorage = eventStorage;
     }
 
     public List<Film> findAll() {
@@ -84,6 +87,7 @@ public class FilmService {
         User user = userService.findById(userId);
         film.addLike(user);
         filmStorage.updateFilm(film);
+        eventStorage.createEvent(userId, "LIKE", "ADD", id);
         return film;
     }
 
@@ -94,6 +98,7 @@ public class FilmService {
         }
         currentFilm.removeLike(userId);
         filmStorage.updateFilm(currentFilm);
+        eventStorage.createEvent(userId, "LIKE", "REMOVE", filmId);
         return currentFilm;
     }
 

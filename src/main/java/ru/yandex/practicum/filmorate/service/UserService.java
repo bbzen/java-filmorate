@@ -4,13 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.event.EventStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -18,11 +22,14 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
+    private final EventStorage eventStorage;
+
 
     @Autowired
-    public UserService(UserStorage userStorage, FilmStorage filmStorage) {
+    public UserService(UserStorage userStorage, FilmStorage filmStorage, EventStorage eventStorage) {
         this.userStorage = userStorage;
         this.filmStorage = filmStorage;
+        this.eventStorage = eventStorage;
     }
 
     public List<Film> getRecommendations(int userId) {
@@ -81,6 +88,7 @@ public class UserService {
             requester.askFS(acceptorId);
             userStorage.updateUser(acceptor);
             userStorage.updateUser(requester);
+            eventStorage.createEvent(acceptorId, "FRIEND", "ADD", requesterId);
             log.debug("Пользователь {} запросил дружбу у пользователя {}.", requesterId, acceptorId);
             log.debug("Пользователь {} добавил в друзья пользователя {}.", requesterId, acceptorId);
         }
@@ -95,6 +103,7 @@ public class UserService {
             userStorage.removeFS(removerId, toRemoveId);
             userStorage.updateUser(remover);
             userStorage.updateUser(toRemove);
+            eventStorage.createEvent(removerId, "FRIEND", "REMOVE", toRemoveId);
             log.debug("Пользователь {} удалил из друзей пользователя {}.", remover.getLogin(), toRemove.getLogin());
         }
     }
@@ -138,5 +147,10 @@ public class UserService {
         isEmailEmpty(user);
         isLoginValid(user);
         isBdValid(user);
+    }
+
+    public List<Event> getUserEvent(Integer userId) {
+        userStorage.findUserById(userId);
+        return userStorage.getUserEvent(userId);
     }
 }
