@@ -9,8 +9,8 @@ birthday timestamp
 
 create table if not exists friends
 (
-requester_id int references users(user_id) ON DELETE CASCADE,
-acceptor_id int references users(user_id) ON DELETE CASCADE,
+requester_id int references users(user_id) ON delete CASCADE,
+acceptor_id int references users(user_id) ON delete CASCADE,
 CONSTRAINT constraint_name UNIQUE (requester_id, acceptor_id)
 );
 
@@ -31,7 +31,7 @@ create table if not exists films
 
 create table if not exists likes
 (
-film_id int references films(film_id) ON DELETE CASCADE,
+film_id int references films(film_id) ON delete CASCADE,
 user_id int references users(user_id),
 constraint constrlikes unique (film_id, user_id)
 );
