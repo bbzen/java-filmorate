@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -19,12 +20,14 @@ import java.util.stream.Collectors;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserService userService;
+    private final DirectorService directorService;
     private static final int MIN_FILMS_COUNT = 10;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserService userService) {
+    public FilmService(FilmStorage filmStorage, UserService userService, DirectorService directorService) {
         this.filmStorage = filmStorage;
         this.userService = userService;
+        this.directorService = directorService;
     }
 
     public List<Film> findAll() {
@@ -34,20 +37,31 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
+    public List<Film> findAllByDirector(int dirId, String sort) {
+        directorService.containsDirector(dirId);
+        List<Film> result = filmStorage.findAllByDirectorId(dirId);
+
+        if (sort.equalsIgnoreCase("year")) {
+            return result.stream().sorted(Comparator.comparingLong(Film::getReleaseDateEpochDays))
+                    .collect(Collectors.toList());
+        }
+        if (sort.equalsIgnoreCase("likes")) {
+            return result.stream().sorted(Comparator.comparingLong(Film::getLikesAmount))
+                    .collect(Collectors.toList());
+        }
+        throw new RuntimeException("Заданный способ сортировки не найден, возможные варианты - year, likes");
+    }
+
     public Film findById(int id) {
         return filmStorage.findById(id);
     }
 
-    public List<Film> findTopFilms(Integer count) {
+    public List<Film> findMostPopular(Integer limit, Integer genreId, Integer releaseYear) {
         int amount = MIN_FILMS_COUNT;
-        if (count != null) {
-            amount = count;
+        if (limit != null) {
+            amount = limit;
         }
-        return filmStorage.findAll()
-                .stream()
-                .sorted(Comparator.comparingInt(Film::getLikesAmount).reversed())
-                .limit(amount)
-                .collect(Collectors.toList());
+        return filmStorage.findMostPopular(amount, genreId, releaseYear);
     }
 
     public void createFilm(Film film) {
@@ -60,8 +74,9 @@ public class FilmService {
         return filmStorage.updateFilm(film);
     }
 
-    public void removeFilm(Film film) {
-        filmStorage.removeFilm(film);
+    public void removeFilm(int filmId) {
+        filmStorage.containsFilm(filmId);
+        filmStorage.removeFilm(filmId);
     }
 
     public Film addLike(int id, int userId) {
@@ -80,6 +95,12 @@ public class FilmService {
         currentFilm.removeLike(userId);
         filmStorage.updateFilm(currentFilm);
         return currentFilm;
+    }
+
+    public List<Film> getCommon(Integer userId, Integer friendId) {
+        userService.hasUser(userId);
+        userService.hasUser(friendId);
+        return filmStorage.getCommonFilmList(userId, friendId);
     }
 
     private void checkName(Film film) {
@@ -115,5 +136,14 @@ public class FilmService {
         checkDescription(film);
         checkDate(film);
         checkDuration(film);
+        checkAddDirectors(film);
+    }
+
+    private void checkAddDirectors(Film film) {
+        for (Director director : film.getDirectors()) {
+            if (!directorService.containsDirector(director.getId())) {
+                directorService.createDirector(director);
+            }
+        }
     }
 }

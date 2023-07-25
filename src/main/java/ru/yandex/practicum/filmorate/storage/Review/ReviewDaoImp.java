@@ -20,7 +20,7 @@ import java.util.Objects;
 @Repository
 public class ReviewDaoImp implements ReviewDao {
     private final JdbcTemplate jdbcTemplate;
-    private final static String Get_REVIEW_BY_ID_QUERY =
+    private final String getReviewByIdQuery =
             "SELECT r.review_id," +
                     " r.user_id," +
                     " r.film_id," +
@@ -32,7 +32,7 @@ public class ReviewDaoImp implements ReviewDao {
                     "LEFT JOIN review_like AS rl ON r.review_id = rl.review_id " +
                     "WHERE r.review_id = ? " +
                     "GROUP BY r.review_id";
-    private final static String GET_ALL_REVIEWS_QUERY =
+    private final String getAllReviewsQuery =
             "SELECT r.review_id, " +
                     "r.user_id, " +
                     "r.film_id, " +
@@ -45,7 +45,7 @@ public class ReviewDaoImp implements ReviewDao {
                     "GROUP BY r.review_id " +
                     "ORDER BY useful DESC " +
                     "LIMIT ?";
-    private final static String GET_REVIEW_BY_FILM_QUERY =
+    private final String getReviewByFilmQuery =
             "SELECT r.review_id, " +
                     "r.user_id, " +
                     "r.film_id, " +
@@ -59,15 +59,15 @@ public class ReviewDaoImp implements ReviewDao {
                     "GROUP BY r.review_id " +
                     "ORDER BY useful DESC " +
                     "LIMIT ?";
-    private final static String ADD_REVIEW_QUERY =
+    private final String addReviewQuery =
             "INSERT INTO reviews (user_id, film_id, content, is_positive) " +
                     "VALUES (?, ?, ?, ?)";
-    private final static String UPDATE_REVIEW_QUERY =
+    private final String updateReviewQuery =
             "UPDATE reviews " +
                     "SET content = ?, " +
                     "is_positive = ? " +
                     "WHERE review_id =?";
-    private final static String DELETE_REVIEW_BY_ID_QUERY = "DELETE FROM reviews WHERE review_id = ?";
+    private final String deleteReviewByIdQuery = "DELETE FROM reviews WHERE review_id = ?";
 
     @Autowired
     public ReviewDaoImp(JdbcTemplate jdbcTemplate) {
@@ -77,30 +77,30 @@ public class ReviewDaoImp implements ReviewDao {
     @Override
     public Review getReviewById(Integer reviewId) {
         try {
-            return jdbcTemplate.queryForObject(Get_REVIEW_BY_ID_QUERY, this::mapRowToReview, reviewId);
+            return jdbcTemplate.queryForObject(getReviewByIdQuery, this::mapRowToReview, reviewId);
         } catch (EmptyResultDataAccessException e) {
             log.warn("Не найден отзыв с ID {}", reviewId);
-            throw new UserNotFoundException("ОТзыв с ID " + reviewId + " не найден.");
+            throw new UserNotFoundException("Отзыв с ID " + reviewId + " не найден.");
         }
     }
 
     @Override
     public Collection<Review> getAllReview(Integer count) {
-        log.info("Запрос на отоброжение отзывов ко всем фильмам в количестве {} обработан.", count);
-        return jdbcTemplate.query(GET_ALL_REVIEWS_QUERY, this::mapRowToReview, count);
+        log.info("Запрос на отображение отзывов ко всем фильмам в количестве {} обработан.", count);
+        return jdbcTemplate.query(getAllReviewsQuery, this::mapRowToReview, count);
     }
 
     @Override
     public Collection<Review> getReviewByFilmId(Integer filmId, Integer count) {
-        log.info("Запрос на отоброжение отзывов к фильму с ID {} в количестве {} обработан.", filmId, count);
-        return jdbcTemplate.query(GET_REVIEW_BY_FILM_QUERY, this::mapRowToReview, filmId, count);
+        log.info("Запрос на отображение отзывов к фильму с ID {} в количестве {} обработан.", filmId, count);
+        return jdbcTemplate.query(getReviewByFilmQuery, this::mapRowToReview, filmId, count);
     }
 
     @Override
     public Review addReview(Review review) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement statement = connection.prepareStatement(ADD_REVIEW_QUERY, new String[]{"review_id"});
+            PreparedStatement statement = connection.prepareStatement(addReviewQuery, new String[]{"review_id"});
             statement.setInt(1, review.getUserId());
             statement.setInt(2, review.getFilmId());
             statement.setString(3, review.getContent());
@@ -114,14 +114,14 @@ public class ReviewDaoImp implements ReviewDao {
 
     @Override
     public Review updateReview(Review review) {
-        jdbcTemplate.update(UPDATE_REVIEW_QUERY, review.getContent(), review.getIsPositive(), review.getReviewId());
-        log.debug("Отзыв {} обнавлен.", review.getReviewId());
+        jdbcTemplate.update(updateReviewQuery, review.getContent(), review.getIsPositive(), review.getReviewId());
+        log.debug("Отзыв {} обновлен.", review.getReviewId());
         return getReviewById(review.getReviewId());
     }
 
     @Override
     public Integer deleteReviewById(Integer id) {
-        jdbcTemplate.update(DELETE_REVIEW_BY_ID_QUERY, id);
+        jdbcTemplate.update(deleteReviewByIdQuery, id);
         log.debug("Отзыв {} удален.", id);
         return id;
     }

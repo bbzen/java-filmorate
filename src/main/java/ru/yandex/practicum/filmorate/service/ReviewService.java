@@ -19,7 +19,7 @@ public class ReviewService {
     private final FilmService filmService;
 
     @Autowired
-    public ReviewService(ReviewDao reviewDao, ReviewLikeDao reviewLikeDao , UserService userService, FilmService filmService) {
+    public ReviewService(ReviewDao reviewDao, ReviewLikeDao reviewLikeDao, UserService userService, FilmService filmService) {
         this.reviewDao = reviewDao;
         this.reviewLikeDao = reviewLikeDao;
         this.userService = userService;
@@ -28,16 +28,16 @@ public class ReviewService {
 
     public Collection<Review> getReviews(Integer filmId, Integer count) {
         if (filmId < 1) {
-            log.info("Обработка запроса на отоброжение отзывов ко всем фильмам в количестве {}.", count);
+            log.info("Обработка запроса на отображение отзывов ко всем фильмам в количестве {}.", count);
             return reviewDao.getAllReview(count);
         }
         filmService.findById(filmId);
-        log.info("Обработка запроса на отоброжение отзывов к фильму с ID {} в количестве {}.", filmId, count);
+        log.info("Обработка запроса на отображение отзывов к фильму с ID {} в количестве {}.", filmId, count);
         return reviewDao.getReviewByFilmId(filmId, count);
     }
 
     public Review getReviewById(Integer id) {
-        log.info("Обработка запроса на отображение отзывава c ID {}.", id);
+        log.info("Обработка запроса на отображение отзыва c ID {}.", id);
         return reviewDao.getReviewById(id);
     }
 
@@ -46,9 +46,9 @@ public class ReviewService {
         filmService.findById(review.getFilmId());
         if (review.getReviewId() != null) {
             log.warn("При создании отзыва был передан id.");
-            throw new ValidationException("При создание отзыва был передан id. Id создается автаматически.");
+            throw new ValidationException("При создание отзыва был передан id. Id создается автоматически.");
         }
-        log.info("Оброботка запроса на добавление нового отзыва.");
+        log.info("Обработка запроса на добавление нового отзыва.");
         return reviewDao.addReview(review);
     }
 

@@ -86,7 +86,7 @@ class FilmDbStorageTest {
     void removeFilm() {
         filmStorage.createFilm(filmFirst);
         Film toRemove = filmStorage.findById(1);
-        filmStorage.removeFilm(toRemove);
+        filmStorage.removeFilm(toRemove.getId());
 
         try {
             filmStorage.findById(toRemove.getId());

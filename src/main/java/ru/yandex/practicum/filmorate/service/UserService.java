@@ -43,6 +43,10 @@ public class UserService {
         return userStorage.findUserById(id);
     }
 
+    public Boolean hasUser(int userId) {
+        return userStorage.containsUser(userId);
+    }
+
     public List<User> findUserFriends(int id) {
         return userStorage.findUserById(id)
                 .getFriends().stream()
@@ -87,6 +91,11 @@ public class UserService {
             userStorage.updateUser(toRemove);
             log.debug("Пользователь {} удалил из друзей пользователя {}.", remover.getLogin(), toRemove.getLogin());
         }
+    }
+
+    public void removeUser(int userId) {
+        userStorage.containsUser(userId);
+        userStorage.removeUser(userId);
     }
 
     private void checkName(User user) {
