@@ -21,6 +21,8 @@ public interface FilmStorage {
 
     boolean containsFilm(int id);
 
+    List<Film> getRecommendations(int userId);
+
     List<Film> getCommonFilmList(int userId, int friendId);
 
     List<Film> findByDirTitle(String by, String query);
