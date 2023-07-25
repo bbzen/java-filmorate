@@ -25,4 +25,5 @@ public interface FilmStorage {
 
     List<Film> getCommonFilmList(int userId, int friendId);
 
+    List<Film> findByDirTitle(String by, String query);
 }
