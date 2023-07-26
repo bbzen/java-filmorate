@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.storage.Event.EventStorage;
 import ru.yandex.practicum.filmorate.storage.Review.ReviewDao;
 import ru.yandex.practicum.filmorate.storage.Review.ReviewLikeDao;
 
@@ -17,13 +18,15 @@ public class ReviewService {
     private final ReviewLikeDao reviewLikeDao;
     private final UserService userService;
     private final FilmService filmService;
+    private final EventStorage eventStorage;
 
     @Autowired
-    public ReviewService(ReviewDao reviewDao, ReviewLikeDao reviewLikeDao, UserService userService, FilmService filmService) {
+    public ReviewService(ReviewDao reviewDao, ReviewLikeDao reviewLikeDao, UserService userService, FilmService filmService, EventStorage eventStorage) {
         this.reviewDao = reviewDao;
         this.reviewLikeDao = reviewLikeDao;
         this.userService = userService;
         this.filmService = filmService;
+        this.eventStorage = eventStorage;
     }
 
     public Collection<Review> getReviews(Integer filmId, Integer count) {
@@ -41,26 +44,31 @@ public class ReviewService {
         return reviewDao.getReviewById(id);
     }
 
-    public Review addReview(Review review) {
-        userService.findById(review.getUserId());
-        filmService.findById(review.getFilmId());
-        if (review.getReviewId() != null) {
+    public Review addReview(Review reviewDto) {
+        userService.findById(reviewDto.getUserId());
+        filmService.findById(reviewDto.getFilmId());
+        if (reviewDto.getReviewId() != null) {
             log.warn("При создании отзыва был передан id.");
             throw new ValidationException("При создание отзыва был передан id. Id создается автоматически.");
         }
         log.info("Обработка запроса на добавление нового отзыва.");
-        return reviewDao.addReview(review);
+        Review review = reviewDao.addReview(reviewDto);
+        eventStorage.createEvent(reviewDto.getUserId(), "REVIEW", "ADD", review.getReviewId());
+        return review;
     }
 
     public Review updateReview(Review review) {
+        int reviewAuthorId = getReviewById(review.getReviewId()).getUserId();
+        eventStorage.createEvent(reviewAuthorId, "REVIEW", "UPDATE", review.getReviewId());
         return reviewDao.updateReview(review);
     }
 
     public Integer deleteReviewById(Integer id) {
+        eventStorage.createEvent(getReviewById(id).getUserId(), "REVIEW", "REMOVE", getReviewById(id).getReviewId());
         return reviewDao.deleteReviewById(id);
     }
 
-    public Integer addLike(Integer userId, Integer  reviewId) {
+    public Integer addLike(Integer userId, Integer reviewId) {
         getReviewById(reviewId);
         userService.findById(userId);
         log.info("Обработка запроса на добавление лайка отзыву с ID {} от пользователя с ID {}.", reviewId, userId);
