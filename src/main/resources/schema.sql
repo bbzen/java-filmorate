@@ -7,7 +7,7 @@ drop table genres if  exists cascade;
 drop table film_genres if  exists cascade;
 drop table reviews if  exists cascade;
 drop table review_like if  exists cascade;
-drop table feeds if  exists cascade;
+drop table feeds if exists cascade;
 
 create table if not exists users
 (
