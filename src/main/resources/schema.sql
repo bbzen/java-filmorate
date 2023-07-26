@@ -1,4 +1,13 @@
-
+drop table users if  exists cascade;
+drop table friends if exists cascade;
+drop table mpa if  exists cascade;
+drop table films if  exists cascade;
+drop table likes if  exists cascade;
+drop table genres if  exists cascade;
+drop table film_genres if  exists cascade;
+drop table reviews if  exists cascade;
+drop table review_like if  exists cascade;
+drop table feeds if  exists cascade;
 
 create table if not exists users
 (
