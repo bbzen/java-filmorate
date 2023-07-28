@@ -90,7 +90,7 @@ public class FilmDbStorage implements FilmStorage {
         film.setId(id.intValue());
         updateFilmGenre(film);
         updateFilmDirectors(film);
-        log.debug("Фильм " + film.getName() + " добавлен.");
+        log.debug("Фильм " + film.getId() + " добавлен.");
         return findById(film.getId());
     }
 
@@ -102,6 +102,7 @@ public class FilmDbStorage implements FilmStorage {
         updateLikes(film);
         updateFilmGenre(film);
         updateFilmDirectors(film);
+        log.debug("Фильм " + film.getId() + " обновлен.");
         return findById(film.getId());
     }
 
