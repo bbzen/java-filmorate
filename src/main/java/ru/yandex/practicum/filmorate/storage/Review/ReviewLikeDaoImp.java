@@ -23,21 +23,18 @@ public class ReviewLikeDaoImp implements ReviewLikeDao {
     @Override
     public Integer addLike(Integer userId, Integer reviewId) {
         jdbcTemplate.update(addLikeQuery, userId, reviewId);
-        log.debug("Пользователь {} поставил лайк отзыву {}.", userId, reviewId);
         return reviewId;
     }
 
     @Override
     public Integer addDislikes(Integer userId, Integer reviewId) {
         jdbcTemplate.update(addDislikeQuery, userId, reviewId);
-        log.debug("Пользователь {} поставил дизлайк отзыву {}.", userId, reviewId);
         return reviewId;
     }
 
     @Override
     public Integer delete(Integer userId, Integer reviewId) {
         jdbcTemplate.update(deleteQuery, userId, reviewId);
-        log.debug("Пользователь {} удалил свой лайк отзыву {}.", userId, reviewId);
         return reviewId;
     }
 }

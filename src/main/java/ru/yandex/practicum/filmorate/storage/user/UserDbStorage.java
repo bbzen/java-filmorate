@@ -112,7 +112,6 @@ public class UserDbStorage implements UserStorage {
     public void removeFS(int removerId, int acceptorId) {
         String sql = "delete from friends where requester_id = ? and acceptor_id = ?";
         jdbcTemplate.update(sql, acceptorId, removerId);
-        log.debug("Пользователь " + removerId + " удалил из друзей пользователя " + acceptorId);
     }
 
     @Override

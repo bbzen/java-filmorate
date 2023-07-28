@@ -34,6 +34,7 @@ public class FilmService {
     }
 
     public List<Film> findAll() {
+        log.info("request GET /films");
         return filmStorage.findAll()
                 .stream()
                 .sorted(Comparator.comparingInt(Film::getId))
@@ -41,6 +42,7 @@ public class FilmService {
     }
 
     public List<Film> findAllByDirector(int dirId, String sort) {
+        log.info("request GET /films/director/{}", dirId);
         directorService.containsDirector(dirId);
         List<Film> result = filmStorage.findAllByDirectorId(dirId);
 
@@ -56,10 +58,12 @@ public class FilmService {
     }
 
     public Film findById(int id) {
+        log.info("request GET /films/{}", id);
         return filmStorage.findById(id);
     }
 
     public List<Film> findMostPopular(Integer limit, Integer genreId, Integer releaseYear) {
+        log.info("request GET /films/popular?count={}&genreId={}&year={}", limit, genreId, releaseYear);
         int amount = MIN_FILMS_COUNT;
         if (limit != null) {
             amount = limit;
@@ -68,21 +72,27 @@ public class FilmService {
     }
 
     public void createFilm(Film film) {
+        log.info("request POST '/films'");
+        log.debug("request body: {}", film);
         doAllChecks(film);
         filmStorage.createFilm(film);
     }
 
     public Film updateFilm(Film film) {
+        log.info("request PUT '/films'");
+        log.debug("request body: {}", film);
         doAllChecks(film);
         return filmStorage.updateFilm(film);
     }
 
     public void removeFilm(int filmId) {
+        log.info("request DELETE /films/{}", filmId);
         filmStorage.containsFilm(filmId);
         filmStorage.removeFilm(filmId);
     }
 
     public Film addLike(int id, int userId) {
+        log.info("request PUT /films/{}/like/{}", id, userId);
         Film film = filmStorage.findById(id);
         User user = userService.findById(userId);
         film.addLike(user);
@@ -92,6 +102,7 @@ public class FilmService {
     }
 
     public Film removeLike(int filmId, int userId) {
+        log.info("request DELETE /films/{}/like/{}", filmId, userId);
         Film currentFilm = filmStorage.findById(filmId);
         if (!(currentFilm.containsLike(userId))) {
             throw new UserNotFoundException("Указанный пользователь не лайкал указанный фильм.");
@@ -103,12 +114,14 @@ public class FilmService {
     }
 
     public List<Film> getCommon(Integer userId, Integer friendId) {
+        log.info("request GET /films/common?userId={}&friendId={}", userId, friendId);
         userService.hasUser(userId);
         userService.hasUser(friendId);
         return filmStorage.getCommonFilmList(userId, friendId);
     }
 
     public List<Film> searchFilm(String by, String query) {
+        log.info("request GET /films/search?by={}&query={}", by, query);
         return filmStorage.findByDirTitle(by, query);
     }
 

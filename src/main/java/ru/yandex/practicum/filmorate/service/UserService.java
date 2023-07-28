@@ -32,26 +32,33 @@ public class UserService {
     }
 
     public List<Film> getRecommendations(int userId) {
+        log.info("request GET /users/{}/recommendations", userId);
         return filmStorage.getRecommendations(userId);
     }
 
     public User createUser(User user) {
+        log.info("request POST /users");
+        log.debug("request body: {}", user);
         runAllChecks(user);
         checkName(user);
         return userStorage.createUser(user);
     }
 
     public void updateUser(User user) {
+        log.info("request PUT /users");
+        log.debug("request body: {}", user);
         runAllChecks(user);
         checkName(user);
         userStorage.updateUser(user);
     }
 
     public Collection<User> findAll() {
+        log.info("request GET /users");
         return userStorage.findAll();
     }
 
     public User findById(int id) {
+        log.info("request GET /users/{}", id);
         return userStorage.findUserById(id);
     }
 
@@ -60,6 +67,7 @@ public class UserService {
     }
 
     public List<User> findUserFriends(int id) {
+        log.info("request GET /users/{}/friends", id);
         return userStorage.findUserById(id)
                 .getFriends().stream()
                 .map(userStorage::findUserById)
@@ -67,6 +75,7 @@ public class UserService {
     }
 
     public List<User> findMutualFriends(int id, int otherId) {
+        log.info("request GET /users/{}/friends/common/{}", id, otherId);
         Collection<Integer> userOneFriends = userStorage.findUserById(id).getFriends();
         Collection<Integer> userTwoFriends = userStorage.findUserById(otherId).getFriends();
         List<User> result = new ArrayList<>();
@@ -80,6 +89,7 @@ public class UserService {
     }
 
     public void addToFriends(int acceptorId, int requesterId) {
+        log.info("request PUT /users/{}/friends/{}", acceptorId, requesterId);
         User acceptor = userStorage.findUserById(acceptorId);
         User requester = userStorage.findUserById(requesterId);
         if (userStorage.containsUser(acceptorId) && userStorage.containsUser(requesterId)) {
@@ -95,6 +105,7 @@ public class UserService {
     }
 
     public void removeFromFriends(int removerId, int toRemoveId) {
+        log.info("request DELETE /users/{}/friends/{}", removerId, toRemoveId);
         User remover = userStorage.findUserById(removerId);
         User toRemove = userStorage.findUserById(toRemoveId);
         if (remover.hasFriend(toRemoveId) && toRemove.hasAcceptation(removerId)) {
@@ -110,6 +121,7 @@ public class UserService {
     }
 
     public void removeUser(int userId) {
+        log.info("request DELETE /users/{}", userId);
         userStorage.containsUser(userId);
         userStorage.removeUser(userId);
     }
@@ -145,6 +157,7 @@ public class UserService {
     }
 
     public List<Event> getUserEvent(Integer userId) {
+        log.info("request GET /users/{}/feed", userId);
         userStorage.findUserById(userId);
         return userStorage.getUserEvent(userId);
     }

@@ -19,10 +19,12 @@ public class MpaService {
     }
 
     public Mpa findById(int id) {
+        log.info("request GET /mpa/{}", id);
         return mpaDbStorage.findById(id);
     }
 
     public List<Mpa> findAllMpa() {
+        log.info("request GET /mpa");
         return mpaDbStorage.findAllMpa();
     }
 }

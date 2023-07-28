@@ -79,20 +79,17 @@ public class ReviewDaoImp implements ReviewDao {
         try {
             return jdbcTemplate.queryForObject(getReviewByIdQuery, this::mapRowToReview, reviewId);
         } catch (EmptyResultDataAccessException e) {
-            log.warn("Не найден отзыв с ID {}", reviewId);
             throw new UserNotFoundException("Отзыв с ID " + reviewId + " не найден.");
         }
     }
 
     @Override
     public Collection<Review> getAllReview(Integer count) {
-        log.info("Запрос на отображение отзывов ко всем фильмам в количестве {} обработан.", count);
         return jdbcTemplate.query(getAllReviewsQuery, this::mapRowToReview, count);
     }
 
     @Override
     public Collection<Review> getReviewByFilmId(Integer filmId, Integer count) {
-        log.info("Запрос на отображение отзывов к фильму с ID {} в количестве {} обработан.", filmId, count);
         return jdbcTemplate.query(getReviewByFilmQuery, this::mapRowToReview, filmId, count);
     }
 
