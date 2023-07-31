@@ -30,9 +30,9 @@ public class FilmController {
         return filmService.updateFilm(film);
     }
 
-    @DeleteMapping
-    public void removeFilm(@RequestBody Film film) {
-        filmService.removeFilm(film);
+    @PutMapping("/{id}/like/{userId}")
+    public Film addLike(@PathVariable int id, @PathVariable int userId) {
+        return filmService.addLike(id, userId);
     }
 
     @GetMapping
@@ -45,9 +45,20 @@ public class FilmController {
         return filmService.findById(id);
     }
 
-    @PutMapping("/{id}/like/{userId}")
-    public Film addLike(@PathVariable int id, @PathVariable int userId) {
-        return filmService.addLike(id, userId);
+    @GetMapping("/popular")
+    public List<Film> findPopular(@RequestParam(required = false) Integer count, @RequestParam(required = false) Integer genreId, @RequestParam(required = false) Integer year) {
+        return filmService.findMostPopular(count, genreId, year);
+    }
+
+    @GetMapping("/common")
+    public List<Film> getCommon(@RequestParam Integer userId,
+                                @RequestParam Integer friendId) {
+        return filmService.getCommon(userId, friendId);
+    }
+
+    @GetMapping("/director/{directorId}")
+    public List<Film> getByDirector(@PathVariable int directorId, @RequestParam(required = false) String sortBy) {
+        return filmService.findAllByDirector(directorId, sortBy);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
@@ -55,9 +66,14 @@ public class FilmController {
         return filmService.removeLike(id, userId);
     }
 
-    @GetMapping("/popular")
-    public List<Film> getPopular(@RequestParam(required = false) Integer count) {
-        return filmService.findTopFilms(count);
+    @DeleteMapping("/{id}")
+    public void removeFilm(@PathVariable int id) {
+        filmService.removeFilm(id);
     }
 
+    @GetMapping("/search")
+    public List<Film> searchFilm(@RequestParam String by,
+                                 @RequestParam String query) {
+        return filmService.searchFilm(by, query);
+    }
 }

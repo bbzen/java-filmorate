@@ -4,7 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.Event.EventStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
@@ -17,10 +21,18 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     private final UserStorage userStorage;
+    private final FilmStorage filmStorage;
+    private final EventStorage eventStorage;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(UserStorage userStorage, FilmStorage filmStorage, EventStorage eventStorage) {
         this.userStorage = userStorage;
+        this.filmStorage = filmStorage;
+        this.eventStorage = eventStorage;
+    }
+
+    public List<Film> getRecommendations(int userId) {
+        return filmStorage.getRecommendations(userId);
     }
 
     public User createUser(User user) {
@@ -41,6 +53,10 @@ public class UserService {
 
     public User findById(int id) {
         return userStorage.findUserById(id);
+    }
+
+    public Boolean hasUser(int userId) {
+        return userStorage.containsUser(userId);
     }
 
     public List<User> findUserFriends(int id) {
@@ -73,6 +89,8 @@ public class UserService {
             userStorage.updateUser(requester);
             log.debug("Пользователь {} запросил дружбу у пользователя {}.", requesterId, acceptorId);
             log.debug("Пользователь {} добавил в друзья пользователя {}.", requesterId, acceptorId);
+            eventStorage.createEvent(acceptorId, "FRIEND", "ADD", requesterId);
+
         }
     }
 
@@ -86,7 +104,14 @@ public class UserService {
             userStorage.updateUser(remover);
             userStorage.updateUser(toRemove);
             log.debug("Пользователь {} удалил из друзей пользователя {}.", remover.getLogin(), toRemove.getLogin());
+            eventStorage.createEvent(removerId, "FRIEND", "REMOVE", toRemoveId);
+
         }
+    }
+
+    public void removeUser(int userId) {
+        userStorage.containsUser(userId);
+        userStorage.removeUser(userId);
     }
 
     private void checkName(User user) {
@@ -117,6 +142,11 @@ public class UserService {
             log.debug("Дата рождения не может быть в будущем - {}", user.getBirthday());
             throw new ValidationException("Дата рождения не может быть в будущем.");
         }
+    }
+
+    public List<Event> getUserEvent(Integer userId) {
+        userStorage.findUserById(userId);
+        return userStorage.getUserEvent(userId);
     }
 
     private void runAllChecks(User user) {
